@@ -4,7 +4,7 @@ Freemaged is a free, lightweight, and privacy-focused image editor that runs dir
 
 ## Development
 
-The project uses [Tailwind CSS](https://tailwindcss.com) and vanilla JavaScript. Styles and scripts are in the `index.html` and `about/index.html` files.
+The project uses hand-written CSS and vanilla JavaScript with zero dependencies — no build step, no frameworks, no CDNs. Styles, inline SVG icons and scripts all live inside the `index.html` and `about/index.html` files, so both pages work fully offline.
 
 - `index.html` – The main image editor application.
 - `about/index.html` – The separate "About" page, which is also self-contained.
@@ -28,8 +28,10 @@ If you prefer to run the editor offline, you can download the project and open i
 - **v1.2.1** – Fixed mobile toggle reliability on touch devices.
 - **v1.3** – Added a new mobile slider menu, version number visible next to the title, instant start for cropping and drawing, allows for multiple drawings, added quick optimization for mobile, reordered footer links.
 - **v1.3.1** – Enhanced performance with optimized resource loading and improved accessibility for screen readers and navigation.
-  
+- **v2.0** – Full UI redesign ("refined dark studio") with a dark/light theme toggle that remembers your choice, drag-and-drop uploads, a thumbnail strip with per-image remove, additive uploads that add to the current session instead of replacing it, `Cmd/Ctrl+Shift+Z` for redo, a fix for pasting text into the file name and target-size fields, and dropped CDN dependencies (Tailwind and Font Awesome replaced by hand-written CSS and inline SVG icons) so the editor runs completely offline. Drawing gained new shape tools — line, rectangle, and ellipse alongside pen and a redrawn, much crisper arrow — with Shift to constrain (45° angles, squares, circles), plus working touch drawing on mobile. The optimization presets were rebuilt around a desktop/mobile pair for responsive website sections — export either size or both at once — plus platform presets for Shopify product images and Firebase/CMS uploads.
+
+
 ## Made by
 
 This app was made by Francisco Fernandez with the help of AI.\
-[frandez.com](https://frandez.com)
+[fran.md](https://fran.md)

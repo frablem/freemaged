@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,266 +18,340 @@
     <meta name="twitter:description" content="Learn how Freemaged respects your privacy when editing images.">
     <meta name="twitter:image" content="https://freemaged.com/fav.ico">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0c0e12">
     <link rel="icon" href="../fav.ico" type="image/x-icon">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        /* Applied before first paint so there is never a theme flash. */
+        (function () {
+            var theme = 'dark';
+            try {
+                var override = new URLSearchParams(window.location.search).get('theme');
+                if (override === 'light' || override === 'dark') {
+                    theme = override;
+                } else {
+                    var stored = localStorage.getItem('freemaged-theme');
+                    if (stored === 'light' || stored === 'dark') theme = stored;
+                }
+            } catch (e) { /* private mode / no storage */ }
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+
     <style>
+        /* Same design system as the editor — hand-written, zero dependencies. */
+        :root {
+            color-scheme: dark;
+            --bg-app: #0c0e12;
+            --bg-panel: #12151b;
+            --surface-2: #1c212a;
+            --surface-3: #242a35;
+            --border: rgba(255, 255, 255, .07);
+            --border-strong: rgba(255, 255, 255, .13);
+            --text: #e9ecf2;
+            --text-muted: #98a1b1;
+            --text-dim: #6d7686;
+            --accent: #3b82f6;
+            --accent-hover: #2f76ec;
+            --accent-text: #82b1ff;
+            --accent-fg: #ffffff;
+            --accent-soft: rgba(59, 130, 246, .16);
+            --accent-border: rgba(59, 130, 246, .42);
+            --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
+            --shadow-lg: 0 14px 38px rgba(0, 0, 0, .55);
+            --focus: rgba(59, 130, 246, .7);
+            --r-sm: 8px;
+            --r: 10px;
+            --r-lg: 14px;
+            --t: 150ms cubic-bezier(.4, 0, .2, 1);
+        }
+
+        [data-theme="light"] {
+            color-scheme: light;
+            --bg-app: #f3f4f7;
+            --bg-panel: #ffffff;
+            --surface-2: #f4f5f8;
+            --surface-3: #e9ebf0;
+            --border: rgba(15, 23, 42, .10);
+            --border-strong: rgba(15, 23, 42, .17);
+            --text: #111827;
+            --text-muted: #5a6473;
+            --text-dim: #8791a1;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-text: #1d4ed8;
+            --accent-soft: rgba(37, 99, 235, .10);
+            --accent-border: rgba(37, 99, 235, .40);
+            --shadow-md: 0 4px 14px rgba(15, 23, 42, .10);
+            --shadow-lg: 0 14px 38px rgba(15, 23, 42, .16);
+            --focus: rgba(37, 99, 235, .55);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
-            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 20px 56px;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            background-color: var(--bg-app);
             overscroll-behavior: none;
-        }
-        .control-panel {
-            overflow-y: auto;
-        }
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-        canvas {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            cursor: grab;
-            transition: transform 0.2s ease-out;
-        }
-        #drawingCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none; /* Initially not interactive */
-            z-index: 10;
-        }
-        .crop-selection {
-            position: absolute;
-            border: 2px dashed #3b82f6;
-            box-sizing: border-box;
-            cursor: move;
-            z-index: 10;
-        }
-        .crop-handle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #3b82f6;
-            border: 1px solid white;
-            border-radius: 50%;
-            z-index: 20;
-        }
-        .crop-handle.nw { top: -5px; left: -5px; cursor: nwse-resize; }
-        .crop-handle.ne { top: -5px; right: -5px; cursor: nesw-resize; }
-        .crop-handle.sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
-        .crop-handle.se { bottom: -5px; right: -5px; cursor: nwse-resize; }
-        .crop-handle.n { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-        .crop-handle.s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-        .crop-handle.w { top: 50%; left: -5px; transform: translateY(-50%); cursor: ew-resize; }
-        .crop-handle.e { top: 50%; right: -5px; transform: translateY(-50%); cursor: ew-resize; }
-       
-        .crop-grid-line {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .crop-grid-line.vertical { width: 1px; height: 100%; }
-        .crop-grid-line.horizontal { height: 1px; width: 100%; }
-
-        .tab-button {
-            transition: background-color 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        h1, h2, h3, p, ul { margin: 0; }
 
-        .loader {
-            border: 4px solid #4b5563;
-            border-top: 4px solid #60a5fa;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .control-panel::-webkit-scrollbar { width: 8px; }
-        .control-panel::-webkit-scrollbar-track { background: #374151; border-radius: 10px; } 
-        .control-panel::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 10px; } 
-        .control-panel::-webkit-scrollbar-thumb:hover { background: #9ca3af; } 
-
-        input[type="number"], input[type="text"], select, input[type="range"], input[type="color"] {
-            background-color: #374151;
-            color: #f3f4f6;
-            border-color: #4b5563;
-            padding: 0.5rem;
-        }
-        input[type="number"]::placeholder, input[type="text"]::placeholder {
-            color: #9ca3af;
-        }
-        .file\:bg-blue-800 { background-color: #1e3a8a !important; }
-        .file\:text-blue-300 { color: #93c5fd !important; }
-        .hover\:file\:bg-blue-700:hover .file\:bg-blue-800 { background-color: #1e40af !important; }
-       
-        #imageSelectorList button {
+        .svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+        .icon {
+            width: 16px;
+            height: 16px;
+            flex: none;
             display: block;
-            width: 100%;
-            text-align: left;
-            padding: 8px 12px; 
-            border-bottom: 1px solid #4b5563;
-            font-size: 0.875rem;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-radius: 4px;
-            margin-bottom: 2px;
-        }
-        #imageSelectorList button:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        #imageSelectorList button:hover {
-            background-color: #4b5563;
-        }
-        #imageSelectorList button.active-image {
-            background-color: #2563eb;
-            color: white;
-            font-weight: 600;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            font-size: 0.9rem;
+        :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+        .shell {
+            max-width: 760px;
+            margin: 0 auto;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-md);
+            padding: 32px;
         }
-        .notification.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .notification.fade-out {
-            opacity: 0;
-            transform: translateX(-50%) translateY(20px);
-        }
-        .notification.success { background-color: #10B981; color: white; }
-        .notification.error { background-color: #EF4444; color: white; }
-        .notification.warning { background-color: #F59E0B; color: white; }
-        .notification.info { background-color: #3B82F6; color: white; }
-       
-        .zoom-controls {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-            background-color: rgba(49, 49, 49, 0.7);
-            padding: 8px;
-            border-radius: 8px;
-            z-index: 5;
-        }
-        .zoom-controls button {
-            background-color: #4b5563;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 16px;
-            cursor: pointer;
+        @media (min-width: 768px) { .shell { padding: 48px; } }
+
+        .topbar {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -.015em;
+            color: var(--accent-text);
+            text-decoration: none;
+        }
+        .version {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dim);
+            background-color: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 1px 6px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background-color: var(--surface-2);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background-color var(--t), color var(--t);
         }
-        .zoom-controls button:hover {
-            background-color: #6b7280;
+        .icon-btn:hover { background-color: var(--surface-3); color: var(--text); }
+
+        .page-title {
+            font-size: 30px;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            color: var(--text);
         }
-        .zoom-controls span {
-            color: white;
+        .lede { margin-top: 12px; font-size: 16px; color: var(--text-muted); }
+
+        section { margin-top: 36px; }
+
+        h2 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+
+        p + p, .item + .item { margin-top: 16px; }
+
+        ul { list-style: none; padding: 0; margin-top: 14px; }
+        li {
+            position: relative;
+            padding-left: 22px;
+            margin-top: 10px;
+        }
+        li::before {
+            content: "";
+            position: absolute;
+            left: 4px;
+            top: .62em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent);
+        }
+        li strong { color: var(--text); font-weight: 600; }
+
+        a { color: var(--accent-text); text-decoration: none; border-bottom: 1px solid var(--accent-border); }
+        a:hover { border-bottom-color: var(--accent); }
+
+        .callout {
+            margin-top: 36px;
+            padding: 18px 20px;
+            border-radius: var(--r);
+            border: 1px solid var(--accent-border);
+            background-color: var(--accent-soft);
+            color: var(--accent-text);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        footer { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); text-align: center; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             font-size: 14px;
-            padding: 0 5px;
-            line-height: 30px;
+            font-weight: 600;
+            padding: 11px 20px;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            background-color: var(--accent);
+            color: var(--accent-fg);
+            text-decoration: none;
+            transition: background-color var(--t), transform var(--t);
         }
-        .tool-button.active {
-            background-color: #2563eb;
-            color: white;
+        .btn:hover { background-color: var(--accent-hover); border-color: transparent; }
+        .btn:active { transform: translateY(1px); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition-duration: .01ms !important; }
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-300 flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="max-w-4xl w-full bg-gray-800 rounded-lg shadow-xl p-8 md:p-12 space-y-8">
-        
-        <header class="text-center">
-            <h1 class="text-4xl font-bold text-blue-400">About Freemaged & Your Privacy</h1>
-            <p class="mt-2 text-lg text-gray-400">We believe in your privacy. Freemaged is designed to be a secure, private image editor.</p>
+    <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+        <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+    </svg>
+
+    <div class="shell">
+
+        <div class="topbar">
+            <a class="brand" href="../">Freemaged <span class="version">v2.0</span></a>
+            <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
+                <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
+            </button>
+        </div>
+
+        <header>
+            <h1 class="page-title">About Freemaged &amp; Your Privacy</h1>
+            <p class="lede">We believe in your privacy. Freemaged is designed to be a secure, private image editor.</p>
         </header>
 
-        <main class="space-y-6 text-gray-300">
-            <div>
-                <h2 class="text-2xl font-semibold text-blue-300 border-b border-gray-700 pb-2 mb-4">How It Works (Technically)</h2>
+        <main>
+            <section>
+                <h2>How it works (technically)</h2>
                 <p>
                     Freemaged is built as a client-side application. This means all the heavy lifting—resizing, cropping, applying filters, and exporting—is performed by the JavaScript running in your web browser on your own computer.
                 </p>
-                <ul class="list-disc list-inside mt-3 space-y-2 pl-4">
-                    <li><strong class="font-semibold text-gray-200">No Server Uploads:</strong> When you select an image, it's loaded into your browser's memory. It is never sent to a server for processing.</li>
-                    <li><strong class="font-semibold text-gray-200">Instantaneous Edits:</strong> All operations are handled by your machine's processing power, which is why edits are fast and happen in real-time.</li>
-                    <li><strong class="font-semibold text-gray-200">Secure Exporting:</strong> When you download your edited image, the file is generated directly from the data in your browser and saved to your computer.</li>
+                <ul>
+                    <li><strong>No server uploads:</strong> When you select an image, it's loaded into your browser's memory. It is never sent to a server for processing.</li>
+                    <li><strong>Instantaneous edits:</strong> All operations are handled by your machine's processing power, which is why edits are fast and happen in real-time.</li>
+                    <li><strong>Secure exporting:</strong> When you download your edited image, the file is generated directly from the data in your browser and saved to your computer.</li>
                 </ul>
-            </div>
-            
-            <div>
-                <h2 class="text-2xl font-semibold text-blue-300 border-b border-gray-700 pb-2 mb-4">Our Privacy Commitment</h2>
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-semibold text-lg text-gray-200">Your Images Stay Yours</h3>
-                        <p>All image processing happens directly on your computer in your browser. Your files are never uploaded, saved, or sent to our servers. What happens on your computer, stays on your computer.</p>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-lg text-gray-200">No User Tracking</h3>
-                        <p>We do not use cookies, local storage for tracking, or analytics to monitor your activity. We don't know who you are, how many images you edit, or what edits you perform.</p>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-lg text-gray-200">External Resources</h3>
-                        <p>Like most modern websites, we load fonts (Google Fonts) and icons (Font Awesome) from third-party Content Delivery Networks (CDNs). These services may see your IP address, which is a standard part of how the web works. We do not share any other data with them.</p>
-                    </div>
-                </div>
-            </div>
+            </section>
 
-            <div>
-                <h2 class="text-2xl font-semibold text-blue-300 border-b border-gray-700 pb-2 mb-4">Open Source</h2>
+            <section>
+                <h2>Our privacy commitment</h2>
+                <div class="item">
+                    <h3>Your images stay yours</h3>
+                    <p>All image processing happens directly on your computer in your browser. Your files are never uploaded, saved, or sent to our servers. What happens on your computer, stays on your computer.</p>
+                </div>
+                <div class="item">
+                    <h3>No user tracking</h3>
+                    <p>We do not use cookies or any profiling to monitor your activity. Aside from an anonymous, cookieless page-view count (see External resources below), we don't know who you are, how many images you edit, or what edits you perform. The only thing kept in your browser's local storage is your light/dark theme preference, which never leaves your device.</p>
+                </div>
+                <div class="item">
+                    <h3>External resources</h3>
+                    <p>As of v2.0 the editor no longer loads fonts, icons, or stylesheets from third-party CDNs — the interface uses your system font and inline SVG icons, so the page works completely offline. The only remaining external request is a privacy-friendly, cookieless Cloudflare Web Analytics beacon that counts page views.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>Open source</h2>
                 <p>
                     Freemaged is an open source project. View the code on
-                    <a href="https://github.com/frablem/freemaged" class="underline hover:text-blue-300">GitHub</a>.
+                    <a href="https://github.com/frablem/freemaged">GitHub</a>.
                 </p>
-            </div>
+            </section>
 
-            <p class="text-center text-blue-400 font-semibold text-xl pt-4">
-                Your privacy is a feature, not an afterthought.
-            </p>
+            <p class="callout">Your privacy is a feature, not an afterthought.</p>
         </main>
 
-        <footer class="text-center pt-6 border-t border-gray-700">
-            <a href="../" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                &larr; Go Back to the Editor
+        <footer>
+            <a class="btn" href="../">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+                Go Back to the Editor
             </a>
         </footer>
 
     </div>
-    <script defer>
-        document.documentElement.classList.add('dark');
+
+    <script>
+        (function () {
+            var toggle = document.getElementById('themeToggle');
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                var use = toggle.querySelector('use');
+                if (use) use.setAttribute('href', theme === 'dark' ? '#i-sun' : '#i-moon');
+                var label = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+                toggle.title = label;
+                toggle.setAttribute('aria-label', label);
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#0c0e12' : '#f3f4f7');
+            }
+
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
+            toggle.addEventListener('click', function () {
+                var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                try { localStorage.setItem('freemaged-theme', next); } catch (e) { /* storage unavailable */ }
+                applyTheme(next);
+            });
+        })();
     </script>
-        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e135a7bceccf4977997c0bb875fff165"}'></script><!-- End Cloudflare Web Analytics -->
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e135a7bceccf4977997c0bb875fff165"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
