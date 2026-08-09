@@ -32,6 +32,7 @@ If you prefer to run the editor offline, you can download the project and open i
 - **v2.1:** Added percentage batch resizing, batch transforms and adjustments, batch preset exports, locally saved custom optimization presets, a text and watermark tool, live straighten and custom rotation, hold-to-compare, copy and native share actions, and proper wheel, pan, pinch, fit, and 1:1 zoom controls. Crop selections now keep their chosen aspect ratio even when a handle is dragged beyond the image boundary, and crop and drawing coordinates remain correct while zoomed. Preset cards now use a full-height labeled Download action, and animated GIF imports clearly report that they are flattened to a still frame.
 - **v2.1.1:** Tightened the editor hierarchy with a full-width primary Choose Files action, a compact split footer, and a consistently sized 1:1 canvas control. The former refresh action is now an explicit Clear Session button with a confirmation dialog that explains exactly what will be removed.
 - **v2.1.2:** Matched the vertical padding and height of the primary Choose Files and Reset Active Image actions for a more consistent control rhythm.
+- **v2.1.3:** Tightened the gap between the primary Choose Files and Reset Active Image actions to match the surrounding spacing rhythm.
 
 
 ## Made by

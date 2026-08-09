@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.1.2</title>
+    <title>Freemaged - Free Image Editor v2.1.3</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.1.2 — hand-written design system, zero dependencies
+           Freemaged v2.1.3 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -597,6 +597,7 @@
         .btn-danger:hover:not(:disabled) { background-color: var(--danger-soft); border-color: var(--error); color: var(--danger-text); }
 
         /* ---------------- upload ---------------- */
+        .upload-section { margin-bottom: 8px; }
         .upload-row { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
         .upload-btn { width: 100%; white-space: nowrap; }
         .upload-btn,
@@ -610,6 +611,7 @@
             min-width: 0;
             flex: 1 1 auto;
         }
+        .upload-name:empty { display: none; }
 
         /* ---------------- thumbnails ---------------- */
         .section-head {
@@ -1188,7 +1190,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.2</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.3</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1205,7 +1207,7 @@
             </div>
         </div>
 
-        <div class="section">
+        <div class="section upload-section">
             <span class="field-label">Upload image(s) or paste (Ctrl+V)</span>
             <div class="upload-row">
                 <label class="btn btn-primary upload-btn">
