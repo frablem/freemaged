@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.0</title>
+    <title>Freemaged - Free Image Editor v2.1</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.0 — hand-written design system, zero dependencies
+           Freemaged v2.1 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -506,6 +506,31 @@
         .check-row { display: flex; align-items: center; gap: 8px; }
         .check-row label { font-size: 13px; color: var(--text-muted); cursor: pointer; }
 
+        .scope-row {
+            padding: 9px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            background-color: var(--surface-1);
+        }
+
+        .inline-actions { display: flex; gap: 8px; }
+        .inline-actions > * { flex: 1 1 0; }
+
+        .subpanel {
+            padding: 11px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            background-color: var(--surface-1);
+        }
+
+        details.subpanel > summary {
+            cursor: pointer;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        details.subpanel[open] > summary { margin-bottom: 12px; }
+
         /* color input */
         input[type="color"] {
             appearance: none;
@@ -696,13 +721,15 @@
         .preset-list { display: flex; flex-direction: column; gap: 8px; }
 
         .preset-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: stretch;
+            gap: 0;
             width: 100%;
             text-align: left;
             font: inherit;
-            padding: 11px 12px;
+            padding: 0;
+            overflow: hidden;
             border-radius: var(--r);
             border: 1px solid var(--border);
             background-color: var(--surface-2);
@@ -715,25 +742,37 @@
             border-color: var(--accent-border);
         }
         .preset-card:disabled { opacity: .45; cursor: not-allowed; }
-        .preset-body { display: block; min-width: 0; flex: 1 1 auto; }
+        .preset-body { display: block; min-width: 0; padding: 11px 12px; }
         .preset-title { display: block; font-size: 13px; font-weight: 600; color: var(--text); }
         .preset-desc { display: block; font-size: 11.5px; line-height: 1.45; color: var(--text-muted); margin-top: 3px; }
         .preset-action {
             flex: none;
-            width: 26px;
-            height: 26px;
+            min-width: 82px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 6px;
+            padding: 0 10px;
             border-radius: 7px;
-            background-color: var(--surface-3);
-            color: var(--text-dim);
+            border-left: 1px solid var(--border);
+            border-radius: 0;
+            background-color: var(--accent-soft);
+            color: var(--accent-text);
+            font-size: 11px;
+            font-weight: 600;
             transition: background-color var(--t), color var(--t);
         }
         .preset-card:hover:not(:disabled) .preset-action {
             background-color: var(--accent);
             color: var(--accent-fg);
         }
+
+        .saved-preset-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px;
+        }
+        .saved-preset-row .btn { width: 38px; padding-inline: 0; }
 
         /* ---------------- panel footer ---------------- */
         .panel-spacer { flex: 1 1 auto; min-height: 16px; }
@@ -808,25 +847,33 @@
             background-color: var(--stage);
         }
 
-        canvas {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform .2s ease-out;
+        #canvasViewport {
+            position: relative;
+            flex: none;
+            transform-origin: center center;
+            will-change: transform;
+            touch-action: none;
         }
-        #imageCanvas { cursor: grab; }
+        #imageCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
         #drawingCanvas {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none; /* Initially not interactive */
             z-index: 10;
         }
 
         #crop-container {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             pointer-events: none; /* Pass clicks through unless cropping */
@@ -968,6 +1015,8 @@
         }
         .fab:hover:not(:disabled) { background-color: var(--surface-3); color: var(--text); }
         .fab:disabled { opacity: .4; cursor: not-allowed; }
+        .fab-label { width: auto; min-width: 42px; padding: 0 8px; font-size: 10px; font-weight: 700; }
+        .fab.active { background-color: var(--accent); border-color: transparent; color: var(--accent-fg); }
 
         /* ---------------- loader ---------------- */
         .loader {
@@ -1035,6 +1084,7 @@
             border-color: var(--accent-border);
             color: var(--accent-text);
         }
+        #textOptions .hint { margin-top: 2px; }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -1073,6 +1123,10 @@
         <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
         <symbol id="i-rect" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/></symbol>
         <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="6"/></symbol>
+        <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><rect x="8" y="8" width="8" height="8" rx="1"/></symbol>
+        <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4"/><path d="m8.6 13.5 6.8 4"/></symbol>
         <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
         <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
         <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
@@ -1089,7 +1143,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.0</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1170,6 +1224,10 @@
                 <input id="aspectLock" type="checkbox" checked>
                 <label for="aspectLock">Lock aspect ratio</label>
             </div>
+            <div class="check-row scope-row">
+                <input id="resizeAll" type="checkbox" disabled>
+                <label for="resizeAll">Resize every loaded image by this percentage</label>
+            </div>
             <button id="applyResize" class="btn btn-primary" disabled title="Apply current resize settings">Apply Resize to Active</button>
         </div>
 
@@ -1213,6 +1271,11 @@
                     <button id="flipHorizontal" class="btn" disabled title="Flip Horizontal"><svg class="icon" aria-hidden="true"><use href="#i-flip-h"></use></svg>Flip H</button>
                     <button id="flipVertical" class="btn" disabled title="Flip Vertical"><svg class="icon" aria-hidden="true"><use href="#i-flip-v"></use></svg>Flip V</button>
                 </div>
+                <div style="margin-top:10px">
+                    <label for="rotateAngle" class="field-label">Straighten / rotate <span class="val"><span id="rotateAngleValue">0</span>°</span></label>
+                    <input type="range" id="rotateAngle" min="-45" max="45" step="0.1" value="0" disabled>
+                    <button id="applyRotateAngle" class="btn" style="margin-top:8px" disabled>Apply Custom Rotation</button>
+                </div>
             </div>
             <div>
                 <h4 class="group-title">Filters &amp; adjustments</h4>
@@ -1236,6 +1299,10 @@
                 </div>
             </div>
             <div class="stack-sm">
+                <div class="check-row scope-row">
+                    <input id="adjustAll" type="checkbox" disabled>
+                    <label for="adjustAll">Apply transforms and adjustments to every image</label>
+                </div>
                 <button id="applyAdjustments" class="btn btn-primary" disabled title="Apply current filter adjustments">Apply Adjustments</button>
                 <button id="resetAdjustments" class="btn" disabled title="Reset all filter adjustments">Reset Adjustments</button>
             </div>
@@ -1250,10 +1317,11 @@
                     <button id="arrowTool" class="btn tool-button" disabled title="Arrow (hold Shift to snap to 45°)"><svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>Arrow</button>
                     <button id="rectTool" class="btn tool-button" disabled title="Rectangle (hold Shift for a square)"><svg class="icon" aria-hidden="true"><use href="#i-rect"></use></svg>Rect</button>
                     <button id="ellipseTool" class="btn tool-button" disabled title="Ellipse (hold Shift for a circle)"><svg class="icon" aria-hidden="true"><use href="#i-ellipse"></use></svg>Ellipse</button>
+                    <button id="textTool" class="btn tool-button" disabled title="Add text or a watermark"><svg class="icon" aria-hidden="true"><use href="#i-type"></use></svg>Text</button>
                 </div>
                 <p class="hint" style="margin-top:8px">Hold Shift for straight angles, squares, and circles.</p>
             </div>
-            <div class="grid-2">
+            <div id="strokeOptions" class="grid-2">
                 <div>
                     <label for="drawColor" class="field-label">Color</label>
                     <input type="color" id="drawColor" value="#EF4444">
@@ -1263,6 +1331,39 @@
                     <input type="range" id="lineWidth" min="1" max="50" value="5" disabled>
                 </div>
             </div>
+            <div id="textOptions" class="subpanel stack-sm hidden">
+                <div>
+                    <label for="drawText" class="field-label">Text</label>
+                    <input type="text" id="drawText" maxlength="160" placeholder="Caption or watermark">
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label for="textSize" class="field-label">Size <span class="val"><span id="textSizeValue">42</span>px</span></label>
+                        <input type="range" id="textSize" min="12" max="200" value="42">
+                    </div>
+                    <div>
+                        <label for="textOpacity" class="field-label">Opacity <span class="val"><span id="textOpacityValue">85</span>%</span></label>
+                        <input type="range" id="textOpacity" min="10" max="100" value="85">
+                    </div>
+                </div>
+                <div class="check-row"><input id="textBold" type="checkbox" checked><label for="textBold">Bold</label></div>
+                <div class="check-row"><input id="textOutline" type="checkbox" checked><label for="textOutline">Contrast outline</label></div>
+                <div>
+                    <label for="textPlacement" class="field-label">Placement</label>
+                    <div class="select-wrap">
+                        <select id="textPlacement">
+                            <option value="custom">Tap image to place</option>
+                            <option value="bottom-right">Bottom right watermark</option>
+                            <option value="bottom-left">Bottom left</option>
+                            <option value="top-right">Top right</option>
+                            <option value="top-left">Top left</option>
+                            <option value="center">Center</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="placeText" class="btn">Place Text</button>
+                <p class="hint">Choose a corner, or leave custom selected and tap the image.</p>
+            </div>
             <div class="stack-sm">
                 <button id="applyDraw" class="btn btn-primary" disabled title="Apply drawing to image">Apply Drawing</button>
                 <button id="cancelDraw" class="btn" disabled title="Cancel current drawing">Cancel Drawing</button>
@@ -1270,6 +1371,10 @@
         </div>
 
         <div id="tab-optimize" class="tab-content stack">
+            <div class="check-row scope-row">
+                <input id="optimizeAll" type="checkbox" disabled>
+                <label for="optimizeAll">Download presets for every loaded image</label>
+            </div>
             <div>
                 <h4 class="group-title">Website sections</h4>
                 <p class="hint" style="margin-bottom:10px">Section and hero images usually ship in two sizes: one for desktop, a smaller one served at mobile breakpoints.</p>
@@ -1280,14 +1385,14 @@
                                 <span class="preset-title">Desktop</span>
                                 <span class="preset-desc">Fits 1920 × 1920 px, WEBP. The file you serve above the mobile breakpoint.</span>
                             </span>
-                            <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                            <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                         </button>
                         <button id="optimizeMobile" class="preset-card" disabled title="Download the mobile file">
                             <span class="preset-body">
                                 <span class="preset-title">Mobile</span>
                                 <span class="preset-desc">Fits 1080 × 1920 px, WEBP. Sharp on high-DPR phones and tall enough for portrait heroes.</span>
                             </span>
-                            <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                            <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                         </button>
                     </div>
                     <button id="optimizeSectionPair" class="btn btn-primary" disabled title="Download the desktop and mobile files from the active image">
@@ -1303,17 +1408,48 @@
                             <span class="preset-title">Shopify product</span>
                             <span class="preset-desc">Fits 2000 × 2000 px, JPG. For product image uploads.</span>
                         </span>
-                        <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                        <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                     </button>
                     <button id="optimizeFirebase" class="preset-card" disabled title="Download the Firebase / CMS file">
                         <span class="preset-body">
                             <span class="preset-title">Firebase / CMS</span>
                             <span class="preset-desc">Fits 1000 × 1000 px, JPG under 300 KB. For storage-capped CMS uploads.</span>
                         </span>
-                        <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                        <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                     </button>
                 </div>
             </div>
+            <details class="subpanel">
+                <summary>Custom presets</summary>
+                <div class="stack-sm">
+                    <div>
+                        <label for="customPresetName" class="field-label">Preset name</label>
+                        <input type="text" id="customPresetName" maxlength="40" placeholder="Blog images">
+                    </div>
+                    <div class="grid-2">
+                        <div><label for="customPresetWidth" class="field-label">Max width</label><input type="number" id="customPresetWidth" min="1" placeholder="1600"></div>
+                        <div><label for="customPresetHeight" class="field-label">Max height</label><input type="number" id="customPresetHeight" min="1" placeholder="1600"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <label for="customPresetFormat" class="field-label">Format</label>
+                            <div class="select-wrap"><select id="customPresetFormat"><option value="image/webp">WEBP</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>
+                        </div>
+                        <div><label for="customPresetQuality" class="field-label">Quality</label><input type="number" id="customPresetQuality" min="10" max="100" value="80"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div><label for="customPresetTarget" class="field-label">Target KB</label><input type="number" id="customPresetTarget" min="1" placeholder="Optional"></div>
+                        <div><label for="customPresetSuffix" class="field-label">File suffix</label><input type="text" id="customPresetSuffix" maxlength="30" placeholder="blog"></div>
+                    </div>
+                    <button id="saveCustomPreset" class="btn btn-soft">Save Preset Locally</button>
+                    <div id="savedPresetControls" class="saved-preset-row hidden">
+                        <div class="select-wrap"><select id="savedPresetSelect" aria-label="Saved custom preset"></select></div>
+                        <button id="deleteCustomPreset" class="btn btn-danger" title="Delete selected preset" aria-label="Delete selected preset"><svg class="icon"><use href="#i-x"></use></svg></button>
+                    </div>
+                    <button id="runCustomPreset" class="btn btn-primary" disabled>Download Selected Preset</button>
+                    <p class="hint">Custom presets stay only in this browser.</p>
+                </div>
+            </details>
             <div id="optimizeLoader" class="loader-box">
                 <div class="loader"></div>
                 <p>Optimizing…</p>
@@ -1350,6 +1486,10 @@
                 <button id="downloadAllButton" class="btn" disabled title="Download all processed images as individual files">
                     <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Download All Processed
                 </button>
+                <div class="inline-actions">
+                    <button id="copyImageButton" class="btn" disabled title="Copy the active image as PNG"><svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Copy</button>
+                    <button id="shareImageButton" class="btn" disabled title="Share the active image"><svg class="icon" aria-hidden="true"><use href="#i-share"></use></svg>Share</button>
+                </div>
             </div>
             <div id="exportLoader" class="loader-box">
                 <div class="loader"></div>
@@ -1378,9 +1518,11 @@
 
     <div id="canvasHost">
         <div class="canvas-container">
-            <canvas id="imageCanvas"></canvas>
-            <canvas id="drawingCanvas"></canvas>
-            <div id="crop-container"></div>
+            <div id="canvasViewport">
+                <canvas id="imageCanvas"></canvas>
+                <canvas id="drawingCanvas"></canvas>
+                <div id="crop-container"></div>
+            </div>
         </div>
 
         <div id="canvasMessage">
@@ -1401,6 +1543,9 @@
         <div id="canvas-controls">
             <button id="zoomInBtn" class="fab" title="Zoom In" aria-label="Zoom in" disabled><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></button>
             <button id="zoomOutBtn" class="fab" title="Zoom Out" aria-label="Zoom out" disabled><svg class="icon" aria-hidden="true"><use href="#i-minus"></use></svg></button>
+            <button id="actualSizeBtn" class="fab fab-label" title="View at actual pixel size" aria-label="View at actual pixel size" disabled>1:1</button>
+            <button id="fitViewBtn" class="fab" title="Fit image in view" aria-label="Fit image in view" disabled><svg class="icon" aria-hidden="true"><use href="#i-fit"></use></svg></button>
+            <button id="compareBtn" class="fab" title="Hold to compare with original" aria-label="Hold to compare with original" disabled><svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg></button>
             <button id="fullscreenBtn" class="fab" title="Toggle Fullscreen" aria-label="Toggle fullscreen" disabled><svg class="icon" aria-hidden="true"><use href="#i-maximize"></use></svg></button>
         </div>
     </div>
@@ -1426,6 +1571,7 @@
         const drawCtx = drawingCanvas.getContext('2d');
         const canvasMessage = getEl('canvasMessage');
         const canvasHost = getEl('canvasHost');
+        const canvasViewport = getEl('canvasViewport');
         const cropContainer = getEl('crop-container');
 
         // Empty-state markup, captured before any loader replaces it.
@@ -1456,6 +1602,7 @@
         const resizeWidthInput = getEl('resizeWidth'); 
         const resizeHeightInput = getEl('resizeHeight'); 
         const aspectLock = getEl('aspectLock');
+        const resizeAll = getEl('resizeAll');
         const applyResizeBtn = getEl('applyResize');
 
         // Crop Tab
@@ -1470,6 +1617,10 @@
         const rotateRightBtn = getEl('rotateRight');
         const flipHorizontalBtn = getEl('flipHorizontal');
         const flipVerticalBtn = getEl('flipVertical');
+        const rotateAngleSlider = getEl('rotateAngle');
+        const rotateAngleValue = getEl('rotateAngleValue');
+        const applyRotateAngleBtn = getEl('applyRotateAngle');
+        const adjustAll = getEl('adjustAll');
         const brightnessSlider = getEl('brightness');
         const brightnessValue = getEl('brightnessValue');
         const contrastSlider = getEl('contrast');
@@ -1487,9 +1638,21 @@
         const lineToolBtn = getEl('lineTool');
         const rectToolBtn = getEl('rectTool');
         const ellipseToolBtn = getEl('ellipseTool');
+        const textToolBtn = getEl('textTool');
         const drawColorInput = getEl('drawColor');
+        const strokeOptions = getEl('strokeOptions');
         const lineWidthSlider = getEl('lineWidth');
         const lineWidthValue = getEl('lineWidthValue');
+        const textOptions = getEl('textOptions');
+        const drawTextInput = getEl('drawText');
+        const textSizeSlider = getEl('textSize');
+        const textSizeValue = getEl('textSizeValue');
+        const textOpacitySlider = getEl('textOpacity');
+        const textOpacityValue = getEl('textOpacityValue');
+        const textBold = getEl('textBold');
+        const textOutline = getEl('textOutline');
+        const textPlacement = getEl('textPlacement');
+        const placeTextBtn = getEl('placeText');
         const applyDrawBtn = getEl('applyDraw');
         const cancelDrawBtn = getEl('cancelDraw');
 
@@ -1499,7 +1662,20 @@
         const optimizeSectionPairBtn = getEl('optimizeSectionPair');
         const optimizeShopifyBtn = getEl('optimizeShopify');
         const optimizeFirebaseBtn = getEl('optimizeFirebase');
+        const optimizeAll = getEl('optimizeAll');
         const optimizeLoader = getEl('optimizeLoader');
+        const customPresetName = getEl('customPresetName');
+        const customPresetWidth = getEl('customPresetWidth');
+        const customPresetHeight = getEl('customPresetHeight');
+        const customPresetFormat = getEl('customPresetFormat');
+        const customPresetQuality = getEl('customPresetQuality');
+        const customPresetTarget = getEl('customPresetTarget');
+        const customPresetSuffix = getEl('customPresetSuffix');
+        const saveCustomPresetBtn = getEl('saveCustomPreset');
+        const savedPresetControls = getEl('savedPresetControls');
+        const savedPresetSelect = getEl('savedPresetSelect');
+        const deleteCustomPresetBtn = getEl('deleteCustomPreset');
+        const runCustomPresetBtn = getEl('runCustomPreset');
 
         // Export Tab
         const fileNameInput = getEl('fileName');
@@ -1510,18 +1686,29 @@
         const targetFileSizeInput = getEl('targetFileSize');
         const downloadActiveButton = getEl('downloadActiveButton');
         const downloadAllButton = getEl('downloadAllButton');
+        const copyImageButton = getEl('copyImageButton');
+        const shareImageButton = getEl('shareImageButton');
         const exportLoader = getEl('exportLoader');
         const exportMessage = getEl('exportMessage');
 
         // Canvas Controls
         const zoomInBtn = getEl('zoomInBtn');
         const zoomOutBtn = getEl('zoomOutBtn');
+        const actualSizeBtn = getEl('actualSizeBtn');
+        const fitViewBtn = getEl('fitViewBtn');
+        const compareBtn = getEl('compareBtn');
         const fullscreenBtn = getEl('fullscreenBtn');
         
         // --- GLOBAL STATE ---
         let imageStore = [];
         let activeImageIndex = -1; 
         let canvasScale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let panGesture = null;
+        let pinchGesture = null;
+        let isComparing = false;
+        let previewRotation = 0;
 
         let isCropping = false;
         let cropSelectionDiv = null;
@@ -1545,6 +1732,7 @@
         setupTheme();
         setupDragAndDrop();
         adjustLayoutForViewport();
+        renderCustomPresetOptions();
 
         // --- THEME ---
         function setupTheme() {
@@ -1594,6 +1782,15 @@
         }
 
         function dataURLtoBlob(dataurl) { return fetch(dataurl).then(res => res.blob()); }
+
+        function imageFromSource(src) {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(new Error('The browser could not create the edited image.'));
+                image.src = src;
+            });
+        }
         
         function debounce(func, wait) {
             let timeout;
@@ -1604,9 +1801,9 @@
         }
 
         // --- STATE MANAGEMENT (Undo/Redo) ---
-        function saveState(operationName = "Unknown operation") {
-            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
-            const activeImgData = imageStore[activeImageIndex];
+        function saveState(operationName = "Unknown operation", imageIndex = activeImageIndex) {
+            if (imageIndex === -1 || !imageStore[imageIndex]) return;
+            const activeImgData = imageStore[imageIndex];
             
             if (activeImgData.historyPointer < activeImgData.history.length - 1) {
                 activeImgData.history = activeImgData.history.slice(0, activeImgData.historyPointer + 1);
@@ -1619,7 +1816,7 @@
 
             activeImgData.history.push(currentStateSrc);
             activeImgData.historyPointer = activeImgData.history.length - 1;
-            updateUndoRedoButtons();
+            if (imageIndex === activeImageIndex) updateUndoRedoButtons();
         }
         
         function updateUndoRedoButtons() {
@@ -1728,6 +1925,10 @@
                     if (newTab !== 'draw' && isDrawing) cancelDrawMode();
                     if (newTab !== 'adjust') {
                         resetTempAdjustmentFilters(false); 
+                        previewRotation = 0;
+                        rotateAngleSlider.value = 0;
+                        rotateAngleValue.textContent = '0';
+                        applyCanvasTransform();
                     }
 
                     tabButtons.forEach(btn => {
@@ -1757,14 +1958,16 @@
             const controls = [
                 applyResizeBtn, applyCropBtn, cancelCropBtn, downloadActiveButton, 
                 downloadAllButton, resetImageBtn, undoButton, redoButton, rotateLeftBtn, rotateRightBtn,
-                flipHorizontalBtn, flipVerticalBtn, applyAdjustmentsBtn, resetAdjustmentsBtn,
-                resizePercent, resizeWidthInput, resizeHeightInput, aspectLock, fileNameInput, 
+                flipHorizontalBtn, flipVerticalBtn, rotateAngleSlider, applyRotateAngleBtn, adjustAll,
+                applyAdjustmentsBtn, resetAdjustmentsBtn,
+                resizePercent, resizeWidthInput, resizeHeightInput, aspectLock, resizeAll, fileNameInput,
                 fileFormatSelect, qualitySlider, targetFileSizeInput, aspectRatioSelect,
                 brightnessSlider, contrastSlider, saturationSlider, grayscaleSlider,
-                penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, drawColorInput, lineWidthSlider,
-                applyDrawBtn, cancelDrawBtn,
+                penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, textToolBtn, drawColorInput, lineWidthSlider,
+                drawTextInput, textSizeSlider, textOpacitySlider, textBold, textOutline, textPlacement, placeTextBtn,
+                applyDrawBtn, cancelDrawBtn, copyImageButton, shareImageButton,
                 optimizeDesktopBtn, optimizeMobileBtn, optimizeSectionPairBtn, optimizeShopifyBtn, optimizeFirebaseBtn,
-                zoomInBtn, zoomOutBtn, fullscreenBtn
+                optimizeAll, runCustomPresetBtn, zoomInBtn, zoomOutBtn, actualSizeBtn, fitViewBtn, compareBtn, fullscreenBtn
             ];
             controls.forEach(el => el.disabled = true);
         }
@@ -1774,18 +1977,30 @@
             
             const controls = [
                 applyResizeBtn, downloadActiveButton, resetImageBtn, rotateLeftBtn, rotateRightBtn,
-                flipHorizontalBtn, flipVerticalBtn, applyAdjustmentsBtn, resetAdjustmentsBtn,
+                flipHorizontalBtn, flipVerticalBtn, rotateAngleSlider, applyRotateAngleBtn,
+                applyAdjustmentsBtn, resetAdjustmentsBtn,
                 resizePercent, resizeWidthInput, resizeHeightInput, aspectLock, fileNameInput, 
                 fileFormatSelect, qualitySlider, targetFileSizeInput, aspectRatioSelect,
                 brightnessSlider, contrastSlider, saturationSlider, grayscaleSlider,
-                penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, drawColorInput, lineWidthSlider,
+                penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, textToolBtn, drawColorInput, lineWidthSlider,
+                drawTextInput, textSizeSlider, textOpacitySlider, textBold, textOutline, textPlacement, placeTextBtn,
                 optimizeDesktopBtn, optimizeMobileBtn, optimizeSectionPairBtn, optimizeShopifyBtn, optimizeFirebaseBtn,
-                zoomInBtn, zoomOutBtn, fullscreenBtn
+                copyImageButton, shareImageButton,
+                zoomInBtn, zoomOutBtn, actualSizeBtn, fitViewBtn, compareBtn, fullscreenBtn
             ];
 
             controls.forEach(el => el.disabled = false);
 
             downloadAllButton.disabled = imageStore.length <= 1; 
+            resizeAll.disabled = imageStore.length <= 1;
+            adjustAll.disabled = imageStore.length <= 1;
+            optimizeAll.disabled = imageStore.length <= 1;
+            if (imageStore.length <= 1) {
+                resizeAll.checked = false;
+                adjustAll.checked = false;
+                optimizeAll.checked = false;
+            }
+            runCustomPresetBtn.disabled = savedPresetSelect.options.length === 0;
             updateUndoRedoButtons();
         }
         
@@ -1875,6 +2090,7 @@
         // The refresh button in the header is the "clear all".
         async function handleFiles(files) {
             const incoming = Array.from(files || []).filter(isImageFile);
+            const animatedInputs = incoming.filter(file => file.type === 'image/gif' || /\.gif$/i.test(file.name || '')).length;
             if (incoming.length === 0) {
                 showNotification('No image files found.', 'warning');
                 return;
@@ -1930,6 +2146,9 @@
                     setActiveImage(wasEmpty ? 0 : startIndex, false);
                     if (!wasEmpty) {
                         showNotification(`${loaded.length} image${loaded.length > 1 ? 's' : ''} added.`, 'success', 2000);
+                    }
+                    if (animatedInputs > 0) {
+                        showNotification('Animated GIFs are imported as a still frame.', 'info', 4500);
                     }
                 } else {
                     resetToEmptyState();
@@ -2062,6 +2281,11 @@
 
             activeImageIndex = index;
             canvasScale = 1.0; // Reset zoom on image change
+            panX = 0;
+            panY = 0;
+            previewRotation = 0;
+            rotateAngleSlider.value = 0;
+            rotateAngleValue.textContent = '0';
 
             Array.from(imageSelectorList.children).forEach((btn, i) => {
                 btn.classList.toggle('active-image', i === activeImageIndex);
@@ -2088,14 +2312,42 @@
         }
         
         // --- CANVAS DRAWING & ZOOM ---
+        function rotationPreviewFitScale() {
+            if (!previewRotation) return 1;
+            const container = queryEl('.canvas-container');
+            if (!container) return 1;
+            const radians = Math.abs(previewRotation) * Math.PI / 180;
+            const rotatedWidth = canvasViewport.clientWidth * Math.cos(radians) + canvasViewport.clientHeight * Math.sin(radians);
+            const rotatedHeight = canvasViewport.clientWidth * Math.sin(radians) + canvasViewport.clientHeight * Math.cos(radians);
+            return Math.min(1, container.clientWidth / rotatedWidth, container.clientHeight / rotatedHeight);
+        }
+
+        function applyCanvasTransform() {
+            const effectiveScale = canvasScale * rotationPreviewFitScale();
+            canvasViewport.style.transform = `translate(${panX}px, ${panY}px) scale(${effectiveScale}) rotate(${previewRotation}deg)`;
+        }
+
+        function clampPan() {
+            const container = queryEl('.canvas-container');
+            if (!container || canvasScale <= 1) {
+                panX = 0;
+                panY = 0;
+                return;
+            }
+            const maxX = Math.max(0, (canvasViewport.clientWidth * canvasScale - container.clientWidth) / 2);
+            const maxY = Math.max(0, (canvasViewport.clientHeight * canvasScale - container.clientHeight) / 2);
+            panX = Math.max(-maxX, Math.min(maxX, panX));
+            panY = Math.max(-maxY, Math.min(maxY, panY));
+        }
+
         function drawImageToCanvas(imageToDraw, filters = null) {
             if (!imageToDraw) {
                 ctx.clearRect(0,0,imageCanvas.width, imageCanvas.height);
                 canvasMessage.classList.remove('hidden');
                 canvasMessage.innerHTML = emptyStateHTML;
-                imageCanvas.style.width = 'auto';
-                imageCanvas.style.height = 'auto';
-                imageCanvas.style.transform = 'scale(1)';
+                canvasViewport.style.width = '0';
+                canvasViewport.style.height = '0';
+                canvasViewport.style.transform = 'none';
                 return;
             }
             canvasMessage.classList.add('hidden');
@@ -2121,9 +2373,8 @@
             imageCanvas.width = Math.round(baseDrawWidth); 
             imageCanvas.height = Math.round(baseDrawHeight);
 
-            imageCanvas.style.width = `${Math.round(displayWidth)}px`;
-            imageCanvas.style.height = `${Math.round(displayHeight)}px`;
-            imageCanvas.style.transform = `scale(${canvasScale})`;
+            canvasViewport.style.width = `${Math.round(displayWidth)}px`;
+            canvasViewport.style.height = `${Math.round(displayHeight)}px`;
 
 
             ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
@@ -2139,14 +2390,18 @@
             ctx.drawImage(imageToDraw, 0, 0, imageCanvas.width, imageCanvas.height);
             ctx.filter = 'none'; 
 
-            // Sync drawing canvas
-            const rect = imageCanvas.getBoundingClientRect();
-            drawingCanvas.style.width = `${rect.width}px`;
-            drawingCanvas.style.height = `${rect.height}px`;
-            drawingCanvas.style.left = `${imageCanvas.offsetLeft}px`;
-            drawingCanvas.style.top = `${imageCanvas.offsetTop}px`;
-            drawingCanvas.width = rect.width;
-            drawingCanvas.height = rect.height;
+            // The overlay uses image pixels as its backing coordinate system.
+            // CSS and the shared viewport transform handle fit, zoom and pan.
+            if (drawingCanvas.width !== imageCanvas.width || drawingCanvas.height !== imageCanvas.height) {
+                drawingCanvas.width = imageCanvas.width;
+                drawingCanvas.height = imageCanvas.height;
+                if (persistentDrawingLayer) {
+                    persistentDrawingLayer.width = imageCanvas.width;
+                    persistentDrawingLayer.height = imageCanvas.height;
+                }
+            }
+            clampPan();
+            applyCanvasTransform();
         }
 
         function drawImageToCanvasWithFilters(imageToDraw, filtersToApply) {
@@ -2248,83 +2503,128 @@
             resizePercentValue.textContent = resizePercent.value;
         }
 
+        async function resizeImageAt(index, newWidth, newHeight) {
+            const imageData = imageStore[index];
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = Math.max(1, Math.round(newWidth));
+            tempCanvas.height = Math.max(1, Math.round(newHeight));
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(imageData.current, 0, 0, tempCanvas.width, tempCanvas.height);
+            imageData.current = await imageFromSource(tempCanvas.toDataURL());
+            saveState('Resize', index);
+            refreshThumbnail(index);
+        }
+
+        resizeAll.addEventListener('change', () => {
+            applyResizeBtn.textContent = resizeAll.checked ? 'Apply Percentage to All' : 'Apply Resize to Active';
+        });
+
         applyResizeBtn.addEventListener('click', async () => {
             if (activeImageIndex === -1) return;
-            applyResizeBtn.disabled = true; 
-
-            const activeImgData = imageStore[activeImageIndex];
-            let newW = parseInt(resizeWidthInput.value);
-            let newH = parseInt(resizeHeightInput.value);
-            
-            newW = Math.max(1, newW || activeImgData.current.width); 
-            newH = Math.max(1, newH || activeImgData.current.height);
-
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = newW;
-            tempCanvas.height = newH;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(activeImgData.current, 0, 0, newW, newH);
+            applyResizeBtn.disabled = true;
 
             try {
-                const newResizedImage = new Image();
-                newResizedImage.onload = () => {
-                    activeImgData.current = newResizedImage; 
-                    saveState("Resize");
-                    setActiveImage(activeImageIndex); 
-                    showNotification(`"${activeImgData.name}.${activeImgData.ext}" resized successfully!`);
-                };
-                newResizedImage.onerror = () => showNotification('Error creating resized image data.', 'error');
-                newResizedImage.src = tempCanvas.toDataURL();
+                if (resizeAll.checked && imageStore.length > 1) {
+                    const percent = parseInt(resizePercent.value);
+                    const factor = Math.max(0.01, percent / 100);
+                    for (let index = 0; index < imageStore.length; index++) {
+                        const image = imageStore[index].current;
+                        await resizeImageAt(index, image.width * factor, image.height * factor);
+                    }
+                    setActiveImage(activeImageIndex);
+                    showNotification(`${imageStore.length} images resized to ${percent}%.`);
+                } else {
+                    const active = imageStore[activeImageIndex];
+                    const width = Math.max(1, parseInt(resizeWidthInput.value) || active.current.width);
+                    const height = Math.max(1, parseInt(resizeHeightInput.value) || active.current.height);
+                    await resizeImageAt(activeImageIndex, width, height);
+                    setActiveImage(activeImageIndex);
+                    showNotification(`"${active.name}.${active.ext}" resized successfully!`);
+                }
             } catch (error) {
-                console.error("Error resizing image:", error);
+                console.error('Error resizing image:', error);
                 showNotification(`Error resizing: ${error.message}`, 'error');
             } finally {
-                if (activeImageIndex !== -1) applyResizeBtn.disabled = false; 
+                if (activeImageIndex !== -1) applyResizeBtn.disabled = false;
             }
         });
 
-        // --- CROP LOGIC (REBUILT & ENHANCED) ---
+        // --- CROP LOGIC ---
+        // Crop geometry is stored in image pixels. Display zoom and pan can no
+        // longer leak into the selection math or alter a locked aspect ratio.
+        function getCropRatio() {
+            const selected = aspectRatioSelect.value;
+            if (selected === 'freeform') return null;
+            if (selected === 'original') {
+                const image = imageStore[activeImageIndex].current;
+                return image.width / image.height;
+            }
+            const [width, height] = selected.split(':').map(Number);
+            return width / height;
+        }
+
+        function fitCropRectToRatio(rect, ratio, boundsWidth, boundsHeight) {
+            if (!ratio) return { ...rect };
+            const centerX = rect.x + rect.width / 2;
+            const centerY = rect.y + rect.height / 2;
+            let width = Math.min(rect.width, boundsWidth);
+            let height = width / ratio;
+            if (height > Math.min(rect.height, boundsHeight)) {
+                height = Math.min(rect.height, boundsHeight);
+                width = height * ratio;
+            }
+            if (width > boundsWidth) {
+                width = boundsWidth;
+                height = width / ratio;
+            }
+            if (height > boundsHeight) {
+                height = boundsHeight;
+                width = height * ratio;
+            }
+            return {
+                x: Math.max(0, Math.min(boundsWidth - width, centerX - width / 2)),
+                y: Math.max(0, Math.min(boundsHeight - height, centerY - height / 2)),
+                width,
+                height
+            };
+        }
+
         function enterCropMode() {
             if (activeImageIndex === -1 || isCropping) return;
             isCropping = true;
-            
             imageCanvas.style.cursor = 'crosshair';
             cropContainer.style.pointerEvents = 'all';
 
             cropSelectionDiv = document.createElement('div');
             cropSelectionDiv.className = 'crop-selection';
-            
             const grid = document.createElement('div');
             grid.className = 'crop-grid';
-            for(let i=0; i<9; i++) {
+            for (let i = 0; i < 9; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'crop-grid-cell';
                 grid.appendChild(cell);
             }
             cropSelectionDiv.appendChild(grid);
-
-            const handlePositions = ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'];
-            handlePositions.forEach(pos => {
+            ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'].forEach(position => {
                 const handle = document.createElement('div');
-                handle.className = `crop-handle ${pos}`;
-                handle.dataset.type = pos;
+                handle.className = `crop-handle ${position}`;
+                handle.dataset.type = position;
                 cropSelectionDiv.appendChild(handle);
             });
-            
             cropContainer.appendChild(cropSelectionDiv);
 
-            const canvasRect = imageCanvas.getBoundingClientRect();
-            cropRect.width = canvasRect.width * 0.8;
-            cropRect.height = canvasRect.height * 0.8;
-            cropRect.x = (canvasRect.width - cropRect.width) / 2;
-            cropRect.y = (canvasRect.height - cropRect.height) / 2;
-
+            const image = imageStore[activeImageIndex].current;
+            cropRect = {
+                x: image.width * 0.1,
+                y: image.height * 0.1,
+                width: image.width * 0.8,
+                height: image.height * 0.8
+            };
+            cropRect = fitCropRectToRatio(cropRect, getCropRatio(), image.width, image.height);
             updateCropVisuals();
             updateCropInputs();
-
             applyCropBtn.disabled = false;
             cancelCropBtn.disabled = false;
-
             cropContainer.addEventListener('mousedown', onCropStart);
             cropContainer.addEventListener('touchstart', onCropStart, { passive: false });
         }
@@ -2332,12 +2632,11 @@
         function cancelCropMode() {
             if (!isCropping) return;
             isCropping = false;
+            dragInfo.active = false;
             imageCanvas.style.cursor = 'grab';
             cropContainer.style.pointerEvents = 'none';
-            if (cropSelectionDiv) {
-                cropSelectionDiv.remove();
-                cropSelectionDiv = null;
-            }
+            if (cropSelectionDiv) cropSelectionDiv.remove();
+            cropSelectionDiv = null;
             applyCropBtn.disabled = true;
             cancelCropBtn.disabled = true;
             cropContainer.removeEventListener('mousedown', onCropStart);
@@ -2349,59 +2648,22 @@
         }
 
         function updateCropVisuals() {
-            if (!cropSelectionDiv) return;
-            const canvasRect = imageCanvas.getBoundingClientRect();
-            const containerRect = cropContainer.getBoundingClientRect();
-            const offsetX = canvasRect.left - containerRect.left;
-            const offsetY = canvasRect.top - containerRect.top;
-            cropSelectionDiv.style.transform = `translate(${offsetX + cropRect.x}px, ${offsetY + cropRect.y}px)`;
-            cropSelectionDiv.style.width = `${cropRect.width}px`;
-            cropSelectionDiv.style.height = `${cropRect.height}px`;
+            if (!cropSelectionDiv || activeImageIndex === -1) return;
+            const image = imageStore[activeImageIndex].current;
+            cropSelectionDiv.style.transform = `translate(${cropRect.x / image.width * canvasViewport.clientWidth}px, ${cropRect.y / image.height * canvasViewport.clientHeight}px)`;
+            cropSelectionDiv.style.width = `${cropRect.width / image.width * canvasViewport.clientWidth}px`;
+            cropSelectionDiv.style.height = `${cropRect.height / image.height * canvasViewport.clientHeight}px`;
         }
 
         function updateCropInputs() {
-            if (activeImageIndex === -1) return;
-            const imgData = imageStore[activeImageIndex];
-            const scaleX = imgData.current.width / imageCanvas.clientWidth;
-            const scaleY = imgData.current.height / imageCanvas.clientHeight;
-            cropWidthEl.value = Math.round(cropRect.width * scaleX);
-            cropHeightEl.value = Math.round(cropRect.height * scaleY);
+            cropWidthEl.value = Math.round(cropRect.width);
+            cropHeightEl.value = Math.round(cropRect.height);
         }
 
         aspectRatioSelect.addEventListener('change', () => {
             if (!isCropping || !cropSelectionDiv || activeImageIndex === -1) return;
-            const activeImg = imageStore[activeImageIndex].current;
-            const selectedRatio = aspectRatioSelect.value;
-            if (selectedRatio === 'freeform') return;
-
-            const canvasRect = imageCanvas.getBoundingClientRect();
-            let ratioValue;
-            if (selectedRatio === 'original') {
-                ratioValue = activeImg.width / activeImg.height;
-            } else {
-                const parts = selectedRatio.split(':').map(Number);
-                ratioValue = parts[0] / parts[1];
-            }
-            
-            let newWidth = cropRect.width;
-            let newHeight = newWidth / ratioValue;
-
-            if (newHeight > cropRect.height) {
-                newHeight = cropRect.height;
-                newWidth = newHeight * ratioValue;
-            }
-
-            if (cropRect.x + newWidth > canvasRect.width) {
-                 newWidth = canvasRect.width - cropRect.x;
-                 newHeight = newWidth / ratioValue;
-            }
-            if (cropRect.y + newHeight > canvasRect.height) {
-                 newHeight = canvasRect.height - cropRect.y;
-                 newWidth = newHeight * ratioValue;
-            }
-            
-            cropRect.width = newWidth;
-            cropRect.height = newHeight;
+            const image = imageStore[activeImageIndex].current;
+            cropRect = fitCropRectToRatio(cropRect, getCropRatio(), image.width, image.height);
             updateCropVisuals();
             updateCropInputs();
         });
@@ -2415,85 +2677,108 @@
             e.stopPropagation();
             const target = e.target;
             if (!target.classList.contains('crop-handle') && !target.classList.contains('crop-selection')) return;
-
             dragInfo.active = true;
             dragInfo.target = target.classList.contains('crop-handle') ? target.dataset.type : 'selection';
             const coords = getEventCoords(e);
             dragInfo.startX = coords.clientX;
             dragInfo.startY = coords.clientY;
             dragInfo.originalRect = { ...cropRect };
-
             document.addEventListener('mousemove', onCropMove);
             document.addEventListener('touchmove', onCropMove, { passive: false });
             document.addEventListener('mouseup', onCropEnd);
             document.addEventListener('touchend', onCropEnd);
         }
 
+        function resizeFreeformCrop(original, target, deltaX, deltaY, boundsWidth, boundsHeight, minSize) {
+            let left = original.x;
+            let top = original.y;
+            let right = original.x + original.width;
+            let bottom = original.y + original.height;
+            if (target.includes('w')) left = Math.max(0, Math.min(right - minSize, left + deltaX));
+            if (target.includes('e')) right = Math.min(boundsWidth, Math.max(left + minSize, right + deltaX));
+            if (target.includes('n')) top = Math.max(0, Math.min(bottom - minSize, top + deltaY));
+            if (target.includes('s')) bottom = Math.min(boundsHeight, Math.max(top + minSize, bottom + deltaY));
+            return { x: left, y: top, width: right - left, height: bottom - top };
+        }
+
+        function resizeRatioCrop(original, target, deltaX, deltaY, ratio, boundsWidth, boundsHeight, minSize) {
+            const isCorner = target.length === 2;
+            const minWidth = Math.max(minSize, minSize * ratio);
+            if (isCorner) {
+                const directionX = target.includes('w') ? -1 : 1;
+                const directionY = target.includes('n') ? -1 : 1;
+                const anchorX = directionX < 0 ? original.x + original.width : original.x;
+                const anchorY = directionY < 0 ? original.y + original.height : original.y;
+                const movingX = (directionX < 0 ? original.x : original.x + original.width) + deltaX;
+                const movingY = (directionY < 0 ? original.y : original.y + original.height) + deltaY;
+                const rawWidth = Math.abs(movingX - anchorX);
+                const rawHeightWidth = Math.abs(movingY - anchorY) * ratio;
+                const widthChange = Math.abs(rawWidth - original.width);
+                const heightChange = Math.abs(rawHeightWidth - original.width);
+                let width = widthChange >= heightChange ? rawWidth : rawHeightWidth;
+                const maxWidth = directionX > 0 ? boundsWidth - anchorX : anchorX;
+                const maxHeight = directionY > 0 ? boundsHeight - anchorY : anchorY;
+                const upperWidth = Math.min(maxWidth, maxHeight * ratio);
+                width = Math.max(Math.min(minWidth, upperWidth), Math.min(upperWidth, width));
+                const height = width / ratio;
+                return {
+                    x: directionX > 0 ? anchorX : anchorX - width,
+                    y: directionY > 0 ? anchorY : anchorY - height,
+                    width,
+                    height
+                };
+            }
+
+            if (target === 'e' || target === 'w') {
+                const direction = target === 'w' ? -1 : 1;
+                const anchorX = direction < 0 ? original.x + original.width : original.x;
+                const movingX = (direction < 0 ? original.x : original.x + original.width) + deltaX;
+                const centerY = original.y + original.height / 2;
+                const horizontalMax = direction > 0 ? boundsWidth - anchorX : anchorX;
+                const verticalMax = Math.max(0, 2 * Math.min(centerY, boundsHeight - centerY));
+                const upperWidth = Math.min(horizontalMax, verticalMax * ratio);
+                const width = Math.max(Math.min(minWidth, upperWidth), Math.min(upperWidth, Math.abs(movingX - anchorX)));
+                const height = width / ratio;
+                return { x: direction > 0 ? anchorX : anchorX - width, y: centerY - height / 2, width, height };
+            }
+
+            const direction = target === 'n' ? -1 : 1;
+            const anchorY = direction < 0 ? original.y + original.height : original.y;
+            const movingY = (direction < 0 ? original.y : original.y + original.height) + deltaY;
+            const centerX = original.x + original.width / 2;
+            const verticalMax = direction > 0 ? boundsHeight - anchorY : anchorY;
+            const horizontalMax = Math.max(0, 2 * Math.min(centerX, boundsWidth - centerX));
+            const upperHeight = Math.min(verticalMax, horizontalMax / ratio);
+            const minHeight = Math.max(minSize, minSize / ratio);
+            const height = Math.max(Math.min(minHeight, upperHeight), Math.min(upperHeight, Math.abs(movingY - anchorY)));
+            const width = height * ratio;
+            return { x: centerX - width / 2, y: direction > 0 ? anchorY : anchorY - height, width, height };
+        }
+
         function onCropMove(e) {
             if (!dragInfo.active) return;
             e.preventDefault();
             e.stopPropagation();
-
+            const image = imageStore[activeImageIndex].current;
+            const displayRect = imageCanvas.getBoundingClientRect();
             const coords = getEventCoords(e);
-            const deltaX = coords.clientX - dragInfo.startX;
-            const deltaY = coords.clientY - dragInfo.startY;
-
-            let { x, y, width, height } = dragInfo.originalRect;
-            const canvasRect = imageCanvas.getBoundingClientRect();
-            const minSize = 20;
-            
-            const selectedRatio = aspectRatioSelect.value;
-            let ratioValue = null;
-            if (selectedRatio !== 'freeform') {
-                if (selectedRatio === 'original') {
-                    ratioValue = imageStore[activeImageIndex].current.width / imageStore[activeImageIndex].current.height;
-                } else {
-                    const parts = selectedRatio.split(':').map(Number);
-                    ratioValue = parts[0] / parts[1];
-                }
-            }
+            const deltaX = (coords.clientX - dragInfo.startX) * image.width / displayRect.width;
+            const deltaY = (coords.clientY - dragInfo.startY) * image.height / displayRect.height;
+            const original = dragInfo.originalRect;
+            const minSize = Math.max(1, Math.min(image.width, image.height) * 0.02);
 
             if (dragInfo.target === 'selection') {
-                x += deltaX;
-                y += deltaY;
+                cropRect = {
+                    ...original,
+                    x: Math.max(0, Math.min(image.width - original.width, original.x + deltaX)),
+                    y: Math.max(0, Math.min(image.height - original.height, original.y + deltaY))
+                };
             } else {
-                // Resizing logic
-                if (dragInfo.target.includes('e')) width += deltaX;
-                if (dragInfo.target.includes('w')) { width -= deltaX; x += deltaX; }
-                if (dragInfo.target.includes('s')) height += deltaY;
-                if (dragInfo.target.includes('n')) { height -= deltaY; y += deltaY; }
-
-                if (ratioValue) {
-                    if (['n', 's'].includes(dragInfo.target)) {
-                        width = height * ratioValue;
-                    } else if (['e', 'w'].includes(dragInfo.target)) {
-                        height = width / ratioValue;
-                    } else { // Corners
-                         if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                             height = width / ratioValue;
-                         } else {
-                             width = height * ratioValue;
-                         }
-                    }
-                    if (dragInfo.target.includes('n')) y = dragInfo.originalRect.y + dragInfo.originalRect.height - height;
-                    if (dragInfo.target.includes('w')) x = dragInfo.originalRect.x + dragInfo.originalRect.width - width;
-                }
+                const ratio = getCropRatio();
+                cropRect = ratio
+                    ? resizeRatioCrop(original, dragInfo.target, deltaX, deltaY, ratio, image.width, image.height, minSize)
+                    : resizeFreeformCrop(original, dragInfo.target, deltaX, deltaY, image.width, image.height, minSize);
             }
-
-            if (width < minSize) width = minSize;
-            if (height < minSize) height = minSize;
-            if (x < 0) { x = 0; }
-            if (y < 0) { y = 0; }
-            if (x + width > canvasRect.width) {
-                 if (dragInfo.target === 'selection') x = canvasRect.width - width;
-                 else width = canvasRect.width - x;
-            }
-            if (y + height > canvasRect.height) {
-                 if (dragInfo.target === 'selection') y = canvasRect.height - height;
-                 else height = canvasRect.height - y;
-            }
-            
-            cropRect = { x, y, width, height };
             updateCropVisuals();
             updateCropInputs();
         }
@@ -2506,36 +2791,23 @@
             document.removeEventListener('touchend', onCropEnd);
         }
 
-        applyCropBtn.addEventListener('click', () => {
+        applyCropBtn.addEventListener('click', async () => {
             if (activeImageIndex === -1 || !isCropping) return;
             const imgData = imageStore[activeImageIndex];
-            const scaleX = imgData.current.width / imageCanvas.clientWidth;
-            const scaleY = imgData.current.height / imageCanvas.clientHeight;
-            const sx = cropRect.x * scaleX;
-            const sy = cropRect.y * scaleY;
-            const sWidth = cropRect.width * scaleX;
-            const sHeight = cropRect.height * scaleY;
-
-            if (sWidth <= 0 || sHeight <= 0) {
-                showNotification('Invalid crop area.', 'error');
-                return;
-            }
-
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = Math.round(sWidth);
-            tempCanvas.height = Math.round(sHeight);
+            tempCanvas.width = Math.max(1, Math.round(cropRect.width));
+            tempCanvas.height = Math.max(1, Math.round(cropRect.height));
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(imgData.current, sx, sy, sWidth, sHeight, 0, 0, tempCanvas.width, tempCanvas.height);
-
-            const newCroppedImage = new Image();
-            newCroppedImage.onload = () => {
-                imgData.current = newCroppedImage;
-                saveState("Crop");
+            tempCtx.drawImage(imgData.current, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, tempCanvas.width, tempCanvas.height);
+            cancelCropMode();
+            try {
+                imgData.current = await imageFromSource(tempCanvas.toDataURL());
+                saveState('Crop');
                 setActiveImage(activeImageIndex);
                 showNotification('Image cropped successfully!', 'success');
-            };
-            newCroppedImage.src = tempCanvas.toDataURL();
-            cancelCropMode();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
         });
 
         // --- ADJUSTMENT & FILTER LOGIC ---
@@ -2574,46 +2846,59 @@
         
         resetAdjustmentsBtn.addEventListener('click', () => {
             if (activeImageIndex === -1) return;
-            resetTempAdjustmentFilters(); 
+            previewRotation = 0;
+            rotateAngleSlider.value = 0;
+            rotateAngleValue.textContent = '0';
+            resetTempAdjustmentFilters();
             showNotification('Adjustments preview reset.', 'info', 1500);
         });
 
-        applyAdjustmentsBtn.addEventListener('click', () => {
-            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
-            const activeImgData = imageStore[activeImageIndex];
-            
+        function filteredCanvas(image, filters) {
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = activeImgData.current.width;
-            tempCanvas.height = activeImgData.current.height;
+            tempCanvas.width = image.width;
+            tempCanvas.height = image.height;
             const tempCtx = tempCanvas.getContext('2d');
-
             let filterString = '';
-            if (tempFilters.brightness !== 100) filterString += `brightness(${tempFilters.brightness}%) `;
-            if (tempFilters.contrast !== 100) filterString += `contrast(${tempFilters.contrast}%) `;
-            if (tempFilters.saturation !== 100) filterString += `saturate(${tempFilters.saturation}%) `;
-            if (tempFilters.grayscale !== 0) filterString += `grayscale(${tempFilters.grayscale}%) `;
-            
+            if (filters.brightness !== 100) filterString += `brightness(${filters.brightness}%) `;
+            if (filters.contrast !== 100) filterString += `contrast(${filters.contrast}%) `;
+            if (filters.saturation !== 100) filterString += `saturate(${filters.saturation}%) `;
+            if (filters.grayscale !== 0) filterString += `grayscale(${filters.grayscale}%) `;
             tempCtx.filter = filterString.trim();
-            tempCtx.drawImage(activeImgData.current, 0, 0);
-            tempCtx.filter = 'none'; 
+            tempCtx.drawImage(image, 0, 0);
+            tempCtx.filter = 'none';
+            return tempCanvas;
+        }
 
-            const newAdjustedImage = new Image();
-            newAdjustedImage.onload = () => {
-                activeImgData.current = newAdjustedImage;
-                saveState("Adjustments Applied");
-                setActiveImage(activeImageIndex); 
-                resetTempAdjustmentFilters(false); 
-                showNotification('Adjustments applied successfully!', 'success');
-            };
-            newAdjustedImage.onerror = () => showNotification('Error applying adjustments.', 'error');
-            newAdjustedImage.src = tempCanvas.toDataURL();
+        function adjustmentTargetIndices() {
+            return adjustAll.checked && imageStore.length > 1
+                ? imageStore.map((_, index) => index)
+                : [activeImageIndex];
+        }
+
+        applyAdjustmentsBtn.addEventListener('click', async () => {
+            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
+            const filters = { ...tempFilters };
+            const indices = adjustmentTargetIndices();
+            applyAdjustmentsBtn.disabled = true;
+            try {
+                for (const index of indices) {
+                    const imageData = imageStore[index];
+                    imageData.current = await imageFromSource(filteredCanvas(imageData.current, filters).toDataURL());
+                    saveState('Adjustments Applied', index);
+                    refreshThumbnail(index);
+                }
+                setActiveImage(activeImageIndex);
+                resetTempAdjustmentFilters(false);
+                showNotification(indices.length > 1 ? `${indices.length} images adjusted.` : 'Adjustments applied successfully!', 'success');
+            } catch (error) {
+                showNotification(`Error applying adjustments: ${error.message}`, 'error');
+            } finally {
+                applyAdjustmentsBtn.disabled = false;
+            }
         });
 
         // --- TRANSFORM LOGIC ---
-        function applyTransformation(transformationType) {
-            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
-            const activeImgData = imageStore[activeImageIndex];
-            const img = activeImgData.current;
+        function transformationCanvas(img, transformationType, angleDegrees = 0) {
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
 
@@ -2635,29 +2920,64 @@
                 tempCtx.translate(0, img.height);
                 tempCtx.scale(1, -1);
                 tempCtx.drawImage(img, 0, 0);
+            } else if (transformationType === 'rotateAngle') {
+                const radians = angleDegrees * Math.PI / 180;
+                const cos = Math.abs(Math.cos(radians));
+                const sin = Math.abs(Math.sin(radians));
+                tempCanvas.width = Math.max(1, Math.ceil(img.width * cos + img.height * sin));
+                tempCanvas.height = Math.max(1, Math.ceil(img.width * sin + img.height * cos));
+                tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
+                tempCtx.rotate(radians);
+                tempCtx.drawImage(img, -img.width / 2, -img.height / 2);
             }
+            return tempCanvas;
+        }
 
-            const newTransformedImage = new Image();
-            newTransformedImage.onload = () => {
-                activeImgData.current = newTransformedImage;
-                saveState(transformationType);
+        async function applyTransformation(transformationType, angleDegrees = 0) {
+            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
+            const indices = adjustmentTargetIndices();
+            try {
+                for (const index of indices) {
+                    const imageData = imageStore[index];
+                    imageData.current = await imageFromSource(transformationCanvas(imageData.current, transformationType, angleDegrees).toDataURL());
+                    saveState(transformationType, index);
+                    refreshThumbnail(index);
+                }
                 setActiveImage(activeImageIndex);
-                showNotification(`${transformationType.replace(/([A-Z])/g, ' $1').trim()} applied.`, 'success');
-            };
-            newTransformedImage.onerror = () => showNotification(`Error applying ${transformationType}.`, 'error');
-            newTransformedImage.src = tempCanvas.toDataURL();
+                const label = transformationType === 'rotateAngle'
+                    ? `${angleDegrees}° rotation`
+                    : transformationType.replace(/([A-Z])/g, ' $1').trim();
+                showNotification(`${label} applied${indices.length > 1 ? ` to ${indices.length} images` : ''}.`, 'success');
+            } catch (error) {
+                showNotification(`Error applying transform: ${error.message}`, 'error');
+            }
         }
 
         rotateLeftBtn.addEventListener('click', () => applyTransformation('rotateLeft'));
         rotateRightBtn.addEventListener('click', () => applyTransformation('rotateRight'));
         flipHorizontalBtn.addEventListener('click', () => applyTransformation('flipHorizontal'));
         flipVerticalBtn.addEventListener('click', () => applyTransformation('flipVertical'));
+        rotateAngleSlider.addEventListener('input', () => {
+            previewRotation = parseFloat(rotateAngleSlider.value);
+            rotateAngleValue.textContent = Number(rotateAngleSlider.value).toFixed(1).replace('.0', '');
+            applyCanvasTransform();
+        });
+        applyRotateAngleBtn.addEventListener('click', () => {
+            const angle = parseFloat(rotateAngleSlider.value);
+            if (!angle) {
+                showNotification('Choose a rotation angle first.', 'info');
+                return;
+            }
+            applyTransformation('rotateAngle', angle);
+        });
 
         // --- DRAWING LOGIC ---
-        const drawToolButtons = { pen: penToolBtn, line: lineToolBtn, arrow: arrowToolBtn, rect: rectToolBtn, ellipse: ellipseToolBtn };
+        const drawToolButtons = { pen: penToolBtn, line: lineToolBtn, arrow: arrowToolBtn, rect: rectToolBtn, ellipse: ellipseToolBtn, text: textToolBtn };
         function setDrawingTool(tool) {
             drawingTool = tool;
             Object.keys(drawToolButtons).forEach(name => drawToolButtons[name].classList.toggle('active', name === tool));
+            textOptions.classList.toggle('hidden', tool !== 'text');
+            lineWidthSlider.closest('div').classList.toggle('hidden', tool === 'text');
         }
         Object.keys(drawToolButtons).forEach(name => {
             drawToolButtons[name].addEventListener('click', () => setDrawingTool(name));
@@ -2665,6 +2985,8 @@
         lineWidthSlider.addEventListener('input', () => {
             lineWidthValue.textContent = lineWidthSlider.value;
         });
+        textSizeSlider.addEventListener('input', () => { textSizeValue.textContent = textSizeSlider.value; });
+        textOpacitySlider.addEventListener('input', () => { textOpacityValue.textContent = textOpacitySlider.value; });
 
         function enterDrawMode() {
             if (activeImageIndex === -1 || isDrawing) return;
@@ -2746,13 +3068,85 @@
             newImageWithDrawing.src = tempCanvas.toDataURL();
         });
 
+        function contrastColorFor(hex) {
+            const value = hex.replace('#', '');
+            const red = parseInt(value.slice(0, 2), 16);
+            const green = parseInt(value.slice(2, 4), 16);
+            const blue = parseInt(value.slice(4, 6), 16);
+            return (red * 299 + green * 587 + blue * 114) / 1000 > 145 ? '#000000' : '#ffffff';
+        }
+
+        function placeTextOnLayer(position, customPoint = null) {
+            if (!isDrawing || !persistentDrawingLayer) return;
+            const textValue = drawTextInput.value.trim();
+            if (!textValue) {
+                showNotification('Enter text before placing it.', 'info');
+                drawTextInput.focus();
+                return;
+            }
+            const layerContext = persistentDrawingLayer.getContext('2d');
+            const size = parseInt(textSizeSlider.value);
+            const margin = Math.max(16, size * 0.4);
+            layerContext.save();
+            layerContext.font = `${textBold.checked ? '700' : '400'} ${size}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+            layerContext.textBaseline = 'top';
+            layerContext.globalAlpha = parseInt(textOpacitySlider.value) / 100;
+            const metrics = layerContext.measureText(textValue);
+            const textWidth = metrics.width;
+            const textHeight = size * 1.2;
+            let x = customPoint ? customPoint.x : margin;
+            let y = customPoint ? customPoint.y : margin;
+            if (position === 'top-right') x = persistentDrawingLayer.width - textWidth - margin;
+            if (position === 'bottom-left') y = persistentDrawingLayer.height - textHeight - margin;
+            if (position === 'bottom-right') {
+                x = persistentDrawingLayer.width - textWidth - margin;
+                y = persistentDrawingLayer.height - textHeight - margin;
+            }
+            if (position === 'center') {
+                x = (persistentDrawingLayer.width - textWidth) / 2;
+                y = (persistentDrawingLayer.height - textHeight) / 2;
+            }
+            x = Math.max(0, Math.min(persistentDrawingLayer.width - textWidth, x));
+            y = Math.max(0, Math.min(persistentDrawingLayer.height - textHeight, y));
+            if (textOutline.checked) {
+                layerContext.strokeStyle = contrastColorFor(drawColorInput.value);
+                layerContext.lineWidth = Math.max(2, size * 0.09);
+                layerContext.lineJoin = 'round';
+                layerContext.strokeText(textValue, x, y);
+            }
+            layerContext.fillStyle = drawColorInput.value;
+            layerContext.fillText(textValue, x, y);
+            layerContext.restore();
+            drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            drawCtx.drawImage(persistentDrawingLayer, 0, 0);
+        }
+
+        placeTextBtn.addEventListener('click', () => {
+            if (textPlacement.value === 'custom') {
+                showNotification('Tap the image where you want the text.', 'info');
+                return;
+            }
+            placeTextOnLayer(textPlacement.value);
+        });
+
+        function eventPointInImage(e) {
+            const rect = drawingCanvas.getBoundingClientRect();
+            const coords = getEventCoords(e);
+            return {
+                x: (coords.clientX - rect.left) * drawingCanvas.width / rect.width,
+                y: (coords.clientY - rect.top) * drawingCanvas.height / rect.height
+            };
+        }
+
         function onDrawStart(e) {
             if (!isDrawing) return;
             e.preventDefault();
+            startPaintPoint = eventPointInImage(e);
+            if (drawingTool === 'text') {
+                placeTextOnLayer('custom', startPaintPoint);
+                return;
+            }
             isPainting = true;
-            const rect = drawingCanvas.getBoundingClientRect();
-            const coords = getEventCoords(e);
-            startPaintPoint = { x: coords.clientX - rect.left, y: coords.clientY - rect.top };
             lastPaintPoint = { ...startPaintPoint };
 
             if (drawingTool === 'pen') {
@@ -2764,9 +3158,7 @@
         function onDrawMove(e) {
             if (!isPainting) return;
             e.preventDefault();
-            const rect = drawingCanvas.getBoundingClientRect();
-            const coords = getEventCoords(e);
-            const currentPoint = { x: coords.clientX - rect.left, y: coords.clientY - rect.top };
+            const currentPoint = eventPointInImage(e);
 
             drawCtx.strokeStyle = drawColorInput.value;
             drawCtx.lineWidth = lineWidthSlider.value;
@@ -2797,6 +3189,7 @@
             if (drawingTool === 'pen') {
                 drawCtx.closePath();
             }
+            persistentCtx.clearRect(0, 0, persistentDrawingLayer.width, persistentDrawingLayer.height);
             persistentCtx.drawImage(drawingCanvas, 0, 0);
         }
         
@@ -2894,18 +3287,17 @@
             return format === 'image/jpeg' ? 'jpg' : format.split('/')[1];
         }
 
-        // Renders one preset from the active image and triggers its download.
-        async function downloadOptimizedPreset(preset) {
-            const activeImgData = imageStore[activeImageIndex];
+        // Renders one preset from one local image and triggers its download.
+        async function downloadOptimizedPreset(imageData, preset) {
             const { name, suffix, ...renderOptions } = preset;
 
-            const dataUrl = await processImageForOptimization(activeImgData.current, renderOptions);
+            const dataUrl = await processImageForOptimization(imageData.current, renderOptions);
             if (!dataUrl) {
                 throw new Error(`${name} optimization failed to produce an image.`);
             }
 
             const blob = await dataURLtoBlob(dataUrl);
-            const finalFileName = `${activeImgData.name}_${suffix}.${extensionForFormat(preset.format)}`;
+            const finalFileName = `${imageData.name}_${suffix}.${extensionForFormat(preset.format)}`;
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = finalFileName;
@@ -2923,16 +3315,21 @@
             if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
             if (isOptimizing) return;
 
-            const queue = Array.isArray(presets) ? presets : [presets];
+            const presetQueue = Array.isArray(presets) ? presets : [presets];
+            const imageQueue = optimizeAll.checked && imageStore.length > 1
+                ? imageStore
+                : [imageStore[activeImageIndex]];
             isOptimizing = true;
             optimizeLoader.classList.remove('hidden');
             optimizeLoader.style.display = 'flex';
 
             try {
                 const fileNames = [];
-                for (let i = 0; i < queue.length; i++) {
-                    if (i > 0) await new Promise(resolve => setTimeout(resolve, 300));
-                    fileNames.push(await downloadOptimizedPreset(queue[i]));
+                for (const imageData of imageQueue) {
+                    for (const preset of presetQueue) {
+                        if (fileNames.length > 0) await new Promise(resolve => setTimeout(resolve, 300));
+                        fileNames.push(await downloadOptimizedPreset(imageData, preset));
+                    }
                 }
 
                 showNotification(fileNames.length === 1
@@ -3008,6 +3405,90 @@
         optimizeSectionPairBtn.addEventListener('click', () => applyOptimization([OPTIMIZE_PRESETS.desktop, OPTIMIZE_PRESETS.mobile]));
         optimizeShopifyBtn.addEventListener('click', () => applyOptimization(OPTIMIZE_PRESETS.shopify));
         optimizeFirebaseBtn.addEventListener('click', () => applyOptimization(OPTIMIZE_PRESETS.firebase));
+
+        function readCustomPresets() {
+            try {
+                const parsed = JSON.parse(localStorage.getItem('freemaged-custom-presets') || '[]');
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function writeCustomPresets(presets) {
+            try {
+                localStorage.setItem('freemaged-custom-presets', JSON.stringify(presets));
+                return true;
+            } catch (error) {
+                showNotification('This browser could not save the preset locally.', 'error');
+                return false;
+            }
+        }
+
+        function renderCustomPresetOptions(selectedId = '') {
+            const presets = readCustomPresets();
+            savedPresetSelect.innerHTML = '';
+            presets.forEach(preset => {
+                const option = document.createElement('option');
+                option.value = preset.id;
+                option.textContent = preset.name;
+                savedPresetSelect.appendChild(option);
+            });
+            if (selectedId) savedPresetSelect.value = selectedId;
+            const hasPresets = presets.length > 0;
+            savedPresetControls.classList.toggle('hidden', !hasPresets);
+            runCustomPresetBtn.disabled = !hasPresets || activeImageIndex === -1;
+        }
+
+        saveCustomPresetBtn.addEventListener('click', () => {
+            const name = customPresetName.value.trim();
+            const maxWidth = parseInt(customPresetWidth.value);
+            const maxHeight = parseInt(customPresetHeight.value);
+            if (!name || (!maxWidth && !maxHeight)) {
+                showNotification('Give the preset a name and at least one maximum dimension.', 'warning');
+                return;
+            }
+            const suffix = (customPresetSuffix.value.trim() || name)
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'optimized';
+            const preset = {
+                id: `preset-${Date.now()}`,
+                name,
+                suffix,
+                maxWidth: maxWidth || 99999,
+                maxHeight: maxHeight || 99999,
+                format: customPresetFormat.value,
+                quality: Math.max(0.1, Math.min(1, (parseInt(customPresetQuality.value) || 80) / 100))
+            };
+            const targetKb = parseInt(customPresetTarget.value);
+            if (targetKb && preset.format !== 'image/png') preset.targetKb = targetKb;
+            const presets = readCustomPresets();
+            const sameNameIndex = presets.findIndex(existing => existing.name.toLowerCase() === name.toLowerCase());
+            if (sameNameIndex >= 0) preset.id = presets[sameNameIndex].id;
+            if (sameNameIndex >= 0) presets[sameNameIndex] = preset;
+            else presets.push(preset);
+            if (writeCustomPresets(presets)) {
+                renderCustomPresetOptions(preset.id);
+                showNotification(`Preset "${name}" saved locally.`);
+            }
+        });
+
+        deleteCustomPresetBtn.addEventListener('click', () => {
+            const selectedId = savedPresetSelect.value;
+            const presets = readCustomPresets();
+            const removed = presets.find(preset => preset.id === selectedId);
+            if (!removed) return;
+            if (writeCustomPresets(presets.filter(preset => preset.id !== selectedId))) {
+                renderCustomPresetOptions();
+                showNotification(`Preset "${removed.name}" deleted.`, 'info');
+            }
+        });
+
+        runCustomPresetBtn.addEventListener('click', () => {
+            const preset = readCustomPresets().find(item => item.id === savedPresetSelect.value);
+            if (preset) applyOptimization(preset);
+        });
 
 
         // --- EXPORT LOGIC ---
@@ -3114,17 +3595,183 @@
             showNotification(finalMessage, errorCount > 0 ? 'warning' : (successCount > 0 ? 'success': 'info'));
         });
 
+        async function activeImageBlob(format = fileFormatSelect.value) {
+            const imageData = imageStore[activeImageIndex];
+            const dataUrl = await processImageForOptimization(imageData.current, {
+                maxWidth: imageData.current.width,
+                maxHeight: imageData.current.height,
+                format,
+                quality: parseFloat(qualitySlider.value),
+                targetKb: format === 'image/png' ? undefined : parseFloat(targetFileSizeInput.value)
+            });
+            return dataURLtoBlob(dataUrl);
+        }
+
+        copyImageButton.addEventListener('click', async () => {
+            if (activeImageIndex === -1) return;
+            try {
+                if (!navigator.clipboard || typeof ClipboardItem === 'undefined') throw new Error('Image copying is not supported in this browser.');
+                const blob = await activeImageBlob('image/png');
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                showNotification('Active image copied as PNG.');
+            } catch (error) {
+                showNotification(error.message || 'The image could not be copied.', 'error');
+            }
+        });
+
+        shareImageButton.addEventListener('click', async () => {
+            if (activeImageIndex === -1) return;
+            try {
+                const format = fileFormatSelect.value;
+                const blob = await activeImageBlob(format);
+                const extension = extensionForFormat(format);
+                const baseName = fileNameInput.value || `${imageStore[activeImageIndex].name}_edited`;
+                const file = new File([blob], `${baseName}.${extension}`, { type: format });
+                if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: [file] }))) {
+                    throw new Error('File sharing is not supported in this browser.');
+                }
+                await navigator.share({ files: [file], title: file.name });
+            } catch (error) {
+                if (error && error.name === 'AbortError') return;
+                showNotification(error.message || 'The image could not be shared.', 'error');
+            }
+        });
+
         // --- CANVAS CONTROLS (ZOOM/FULLSCREEN) ---
+        function setCanvasScale(nextScale) {
+            canvasScale = Math.max(0.2, Math.min(8, nextScale));
+            clampPan();
+            applyCanvasTransform();
+        }
+
         zoomInBtn.addEventListener('click', () => {
             if (activeImageIndex === -1) return;
-            canvasScale = Math.min(3.0, canvasScale + 0.1); // Max zoom 300%
-            drawImageToCanvas(imageStore[activeImageIndex].current);
+            setCanvasScale(canvasScale * 1.2);
         });
 
         zoomOutBtn.addEventListener('click', () => {
             if (activeImageIndex === -1) return;
-            canvasScale = Math.max(0.2, canvasScale - 0.1); // Min zoom 20%
-            drawImageToCanvas(imageStore[activeImageIndex].current);
+            setCanvasScale(canvasScale / 1.2);
+        });
+
+        fitViewBtn.addEventListener('click', () => {
+            panX = 0;
+            panY = 0;
+            setCanvasScale(1);
+        });
+
+        actualSizeBtn.addEventListener('click', () => {
+            if (activeImageIndex === -1 || !canvasViewport.clientWidth) return;
+            panX = 0;
+            panY = 0;
+            setCanvasScale(imageStore[activeImageIndex].current.width / canvasViewport.clientWidth);
+        });
+
+        canvasHost.addEventListener('wheel', (event) => {
+            if (activeImageIndex === -1 || isCropping || isDrawing) return;
+            event.preventDefault();
+            setCanvasScale(canvasScale * (event.deltaY < 0 ? 1.12 : 1 / 1.12));
+        }, { passive: false });
+
+        function startMousePan(event) {
+            if (activeImageIndex === -1 || isCropping || isDrawing || canvasScale <= 1) return;
+            event.preventDefault();
+            panGesture = { startX: event.clientX, startY: event.clientY, panX, panY };
+            imageCanvas.style.cursor = 'grabbing';
+            document.addEventListener('mousemove', moveMousePan);
+            document.addEventListener('mouseup', endMousePan);
+        }
+
+        function moveMousePan(event) {
+            if (!panGesture) return;
+            panX = panGesture.panX + event.clientX - panGesture.startX;
+            panY = panGesture.panY + event.clientY - panGesture.startY;
+            clampPan();
+            applyCanvasTransform();
+        }
+
+        function endMousePan() {
+            panGesture = null;
+            imageCanvas.style.cursor = 'grab';
+            document.removeEventListener('mousemove', moveMousePan);
+            document.removeEventListener('mouseup', endMousePan);
+        }
+
+        function touchDistance(touches) {
+            return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+        }
+
+        function touchMidpoint(touches) {
+            return { x: (touches[0].clientX + touches[1].clientX) / 2, y: (touches[0].clientY + touches[1].clientY) / 2 };
+        }
+
+        function startTouchView(event) {
+            if (activeImageIndex === -1 || isCropping || isDrawing) return;
+            if (event.touches.length === 2) {
+                event.preventDefault();
+                const midpoint = touchMidpoint(event.touches);
+                pinchGesture = { distance: touchDistance(event.touches), scale: canvasScale, midpoint, panX, panY };
+                panGesture = null;
+            } else if (event.touches.length === 1 && canvasScale > 1) {
+                event.preventDefault();
+                panGesture = { startX: event.touches[0].clientX, startY: event.touches[0].clientY, panX, panY };
+            }
+        }
+
+        function moveTouchView(event) {
+            if (pinchGesture && event.touches.length === 2) {
+                event.preventDefault();
+                const midpoint = touchMidpoint(event.touches);
+                canvasScale = Math.max(0.2, Math.min(8, pinchGesture.scale * touchDistance(event.touches) / pinchGesture.distance));
+                panX = pinchGesture.panX + midpoint.x - pinchGesture.midpoint.x;
+                panY = pinchGesture.panY + midpoint.y - pinchGesture.midpoint.y;
+                clampPan();
+                applyCanvasTransform();
+            } else if (panGesture && event.touches.length === 1) {
+                event.preventDefault();
+                panX = panGesture.panX + event.touches[0].clientX - panGesture.startX;
+                panY = panGesture.panY + event.touches[0].clientY - panGesture.startY;
+                clampPan();
+                applyCanvasTransform();
+            }
+        }
+
+        function endTouchView(event) {
+            if (event.touches.length < 2) pinchGesture = null;
+            if (event.touches.length === 0) panGesture = null;
+        }
+
+        imageCanvas.addEventListener('mousedown', startMousePan);
+        imageCanvas.addEventListener('touchstart', startTouchView, { passive: false });
+        imageCanvas.addEventListener('touchmove', moveTouchView, { passive: false });
+        imageCanvas.addEventListener('touchend', endTouchView);
+        imageCanvas.addEventListener('touchcancel', endTouchView);
+
+        function startCompare(event) {
+            if (activeImageIndex === -1 || isCropping || isDrawing || isComparing) return;
+            if (event) event.preventDefault();
+            isComparing = true;
+            compareBtn.classList.add('active');
+            drawImageToCanvas(imageStore[activeImageIndex].original);
+        }
+
+        function endCompare() {
+            if (!isComparing || activeImageIndex === -1) return;
+            isComparing = false;
+            compareBtn.classList.remove('active');
+            const filters = getEl('tab-adjust').classList.contains('active') ? tempFilters : null;
+            drawImageToCanvas(imageStore[activeImageIndex].current, filters);
+        }
+
+        compareBtn.addEventListener('mousedown', startCompare);
+        compareBtn.addEventListener('touchstart', startCompare, { passive: false });
+        document.addEventListener('mouseup', endCompare);
+        document.addEventListener('touchend', endCompare);
+        compareBtn.addEventListener('keydown', event => {
+            if (event.key === ' ' || event.key === 'Enter') startCompare(event);
+        });
+        compareBtn.addEventListener('keyup', event => {
+            if (event.key === ' ' || event.key === 'Enter') endCompare();
         });
 
         fullscreenBtn.addEventListener('click', () => {
