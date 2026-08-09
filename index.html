@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.1.1</title>
+    <title>Freemaged - Free Image Editor v2.1.2</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.1.1 — hand-written design system, zero dependencies
+           Freemaged v2.1.2 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -598,7 +598,9 @@
 
         /* ---------------- upload ---------------- */
         .upload-row { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
-        .upload-btn { width: 100%; white-space: nowrap; padding-block: 11px; }
+        .upload-btn { width: 100%; white-space: nowrap; }
+        .upload-btn,
+        #resetImage { min-height: 44px; padding-block: 11px; }
         .upload-name {
             font-size: 12px;
             color: var(--text-muted);
@@ -1186,7 +1188,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.1</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.2</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
