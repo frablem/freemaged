@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.1</title>
+    <title>Freemaged - Free Image Editor v2.1.1</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.1 — hand-written design system, zero dependencies
+           Freemaged v2.1.1 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -597,8 +597,8 @@
         .btn-danger:hover:not(:disabled) { background-color: var(--danger-soft); border-color: var(--error); color: var(--danger-text); }
 
         /* ---------------- upload ---------------- */
-        .upload-row { display: flex; align-items: center; gap: 10px; }
-        .upload-btn { width: auto; white-space: nowrap; }
+        .upload-row { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+        .upload-btn { width: 100%; white-space: nowrap; padding-block: 11px; }
         .upload-name {
             font-size: 12px;
             color: var(--text-muted);
@@ -809,6 +809,14 @@
             line-height: 1.7;
             color: var(--text-dim);
         }
+        .credits-links {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 5px;
+        }
+        .credits-links span { white-space: nowrap; }
         .credits a {
             color: var(--text-muted);
             text-decoration: none;
@@ -1015,8 +1023,43 @@
         }
         .fab:hover:not(:disabled) { background-color: var(--surface-3); color: var(--text); }
         .fab:disabled { opacity: .4; cursor: not-allowed; }
-        .fab-label { width: auto; min-width: 42px; padding: 0 8px; font-size: 10px; font-weight: 700; }
+        .fab-label { width: 34px; min-width: 34px; padding: 0; font-size: 9px; font-weight: 700; }
         .fab.active { background-color: var(--accent); border-color: transparent; color: var(--accent-fg); }
+
+        /* ---------------- destructive confirmation ---------------- */
+        .confirm-dialog {
+            width: min(410px, calc(100vw - 32px));
+            padding: 0;
+            color: var(--text);
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        .confirm-dialog::backdrop {
+            background-color: rgba(0, 0, 0, .68);
+            backdrop-filter: blur(3px);
+        }
+        .confirm-dialog-inner { padding: 20px; }
+        .confirm-dialog-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            color: var(--danger-text);
+            background-color: var(--danger-soft);
+            border: 1px solid var(--danger-border);
+            border-radius: var(--r);
+        }
+        .confirm-dialog-icon .icon { width: 19px; height: 19px; }
+        .confirm-dialog h2 { font-size: 17px; line-height: 1.3; }
+        .confirm-dialog p { margin-top: 7px; color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+        .confirm-dialog-actions { display: flex; gap: 8px; margin-top: 18px; }
+        .confirm-dialog-actions .btn { flex: 1 1 0; }
+        .btn-danger-solid { background-color: var(--error); border-color: transparent; color: #fff; font-weight: 600; }
+        .btn-danger-solid:hover:not(:disabled) { background-color: #dc2626; border-color: transparent; }
 
         /* ---------------- loader ---------------- */
         .loader {
@@ -1103,7 +1146,7 @@
         <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
         <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
         <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
-        <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 15H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></symbol>
         <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
         <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
         <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
@@ -1143,7 +1186,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.1</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1154,16 +1197,16 @@
                 <button id="redoButton" class="icon-btn" title="Redo Last Action (Ctrl+Shift+Z / Ctrl+Y)" aria-label="Redo last action" disabled>
                     <svg class="icon" aria-hidden="true"><use href="#i-redo"></use></svg>
                 </button>
-                <a href="#" onclick="location.reload(); return false;" class="icon-btn" title="Refresh Page &amp; Clear All" aria-label="Refresh page and clear all images">
-                    <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
-                </a>
+                <button id="clearAllButton" class="icon-btn" title="Clear all images and edit history" aria-label="Clear all images and edit history">
+                    <svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg>
+                </button>
             </div>
         </div>
 
         <div class="section">
             <span class="field-label">Upload image(s) or paste (Ctrl+V)</span>
             <div class="upload-row">
-                <label class="btn btn-soft upload-btn">
+                <label class="btn btn-primary upload-btn">
                     <svg class="icon" aria-hidden="true"><use href="#i-upload"></use></svg>
                     Choose Files
                     <input type="file" id="imageUpload" accept="image/*" multiple class="hidden">
@@ -1510,8 +1553,10 @@
 
             <div class="credits">
                 <p>This exists because all other sites are greedy.</p>
-                <p><a href="about/">About this tool.</a></p>
-                <p>Made by <a href="https://fran.md" target="_blank" rel="noopener noreferrer">fran.md</a></p>
+                <div class="credits-links">
+                    <a href="about/">About this tool.</a>
+                    <span>Made by <a href="https://fran.md" target="_blank" rel="noopener noreferrer">fran.md</a></span>
+                </div>
             </div>
         </div>
     </div>
@@ -1550,6 +1595,18 @@
         </div>
     </div>
 
+    <dialog id="clearConfirmDialog" class="confirm-dialog" aria-labelledby="clearConfirmTitle" aria-describedby="clearConfirmText">
+        <div class="confirm-dialog-inner">
+            <div class="confirm-dialog-icon"><svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg></div>
+            <h2 id="clearConfirmTitle">Clear this editing session?</h2>
+            <p id="clearConfirmText">Every loaded image and its undo history will be removed. Downloaded files and saved presets will not be affected.</p>
+            <div class="confirm-dialog-actions">
+                <button id="cancelClearButton" class="btn">Keep Editing</button>
+                <button id="confirmClearButton" class="btn btn-danger-solid">Clear Everything</button>
+            </div>
+        </div>
+    </dialog>
+
     <div id="notificationArea"></div>
 
     <script>
@@ -1581,6 +1638,10 @@
         const themeToggle = getEl('themeToggle');
         const undoButton = getEl('undoButton');
         const redoButton = getEl('redoButton');
+        const clearAllButton = getEl('clearAllButton');
+        const clearConfirmDialog = getEl('clearConfirmDialog');
+        const cancelClearButton = getEl('cancelClearButton');
+        const confirmClearButton = getEl('confirmClearButton');
         const resetImageBtn = getEl('resetImage');
         const activeImageNameEl = getEl('activeImageName');
         const originalDimensionsEl = getEl('originalDimensions');
@@ -1731,6 +1792,7 @@
         setupMobileMenu();
         setupTheme();
         setupDragAndDrop();
+        setupClearConfirmation();
         adjustLayoutForViewport();
         renderCustomPresetOptions();
 
@@ -1902,6 +1964,27 @@
         function toggleMenu() {
             controlPanel.classList.toggle('open');
             menuBackdrop.classList.toggle('open');
+        }
+
+        function setupClearConfirmation() {
+            clearAllButton.addEventListener('click', () => {
+                if (imageStore.length === 0) {
+                    showNotification('There is no editing session to clear yet.', 'info', 1800);
+                    return;
+                }
+                clearConfirmDialog.showModal();
+            });
+            cancelClearButton.addEventListener('click', () => clearConfirmDialog.close());
+            confirmClearButton.addEventListener('click', () => {
+                imageStore = [];
+                populateImageSelector();
+                resetToEmptyState();
+                clearConfirmDialog.close();
+                showNotification('Editing session cleared.', 'info', 1800);
+            });
+            clearConfirmDialog.addEventListener('click', event => {
+                if (event.target === clearConfirmDialog) clearConfirmDialog.close();
+            });
         }
 
         function adjustLayoutForViewport() {
@@ -2169,13 +2252,18 @@
 
             activeImageIndex = -1;
             canvasScale = 1.0;
+            panX = 0;
+            panY = 0;
+            previewRotation = 0;
 
             ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
             imageCanvas.width = 0;
             imageCanvas.height = 0;
             imageCanvas.style.width = '';
             imageCanvas.style.height = '';
-            imageCanvas.style.transform = 'scale(1)';
+            canvasViewport.style.width = '0';
+            canvasViewport.style.height = '0';
+            canvasViewport.style.transform = 'none';
 
             drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
             drawingCanvas.width = 0;
