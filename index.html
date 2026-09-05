@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.1.3</title>
+    <title>Freemaged - Free Image Editor v2.2</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.1.3 — hand-written design system, zero dependencies
+           Freemaged v2.2 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -1030,6 +1030,18 @@
         .fab-label { width: 34px; min-width: 34px; padding: 0; font-size: 9px; font-weight: 700; }
         .fab.active { background-color: var(--accent); border-color: transparent; color: var(--accent-fg); }
 
+        /* ---------------- export preview ---------------- */
+        .output-result:empty { display: none; }
+        .output-result { padding: 10px; border: 1px solid var(--border); border-radius: var(--r); white-space: pre-line; overflow-wrap: anywhere; }
+        .confirm-dialog.preview-dialog { width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); }
+        #previewSummary { white-space: pre-line; overflow-wrap: anywhere; }
+        .preview-stage { margin-top: 14px; height: min(55vh, 540px); overflow: auto; background: var(--stage); border: 1px solid var(--border); border-radius: var(--r); }
+        .preview-stage img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .preview-stage.actual img { width: auto; height: auto; max-width: none; }
+        .preview-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .preview-toolbar .btn { flex: 1 1 160px; width: auto; }
+        @media (max-width: 767px) { .preview-stage { height: 36vh; } }
+
         /* ---------------- destructive confirmation ---------------- */
         .confirm-dialog {
             width: min(410px, calc(100vw - 32px));
@@ -1190,7 +1202,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.1.3</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1418,6 +1430,16 @@
         </div>
 
         <div id="tab-optimize" class="tab-content stack">
+            <div class="stack-sm">
+                <label for="quickPreset" class="field-label">Quick preset</label>
+                <div class="select-wrap"><select id="quickPreset" aria-describedby="quickPresetHint"></select></div>
+                <div class="inline-actions">
+                    <button id="quickDownload" class="btn btn-primary" disabled>Download preset</button>
+                    <button id="quickPreview" class="btn" disabled>Preview</button>
+                </div>
+                <button id="favoritePreset" class="btn btn-soft">Set as favorite</button>
+                <p id="quickPresetHint" class="hint">Opens with your favorite, or the last preset you used.</p>
+            </div>
             <div class="check-row scope-row">
                 <input id="optimizeAll" type="checkbox" disabled>
                 <label for="optimizeAll">Download presets for every loaded image</label>
@@ -1442,8 +1464,8 @@
                             <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                         </button>
                     </div>
-                    <button id="optimizeSectionPair" class="btn btn-primary" disabled title="Download the desktop and mobile files from the active image">
-                        <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Download both
+                    <button id="optimizeSectionPair" class="btn btn-primary" disabled title="Download desktop and mobile files together in one ZIP">
+                        <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Download both as ZIP
                     </button>
                 </div>
             </div>
@@ -1460,7 +1482,7 @@
                     <button id="optimizeFirebase" class="preset-card" disabled title="Download the Firebase / CMS file">
                         <span class="preset-body">
                             <span class="preset-title">Firebase / CMS</span>
-                            <span class="preset-desc">Fits 1000 × 1000 px, JPG under 300 KB. For storage-capped CMS uploads.</span>
+                            <span class="preset-desc">Fits 1000 × 1000 px, JPG, 300 KB target. For storage-capped CMS uploads.</span>
                         </span>
                         <span class="preset-action"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg><span>Download</span></span>
                     </button>
@@ -1497,10 +1519,11 @@
                     <p class="hint">Custom presets stay only in this browser.</p>
                 </div>
             </details>
-            <div id="optimizeLoader" class="loader-box">
-                <div class="loader"></div>
-                <p>Optimizing…</p>
+            <div class="check-row">
+                <input id="optimizeAllowResize" type="checkbox">
+                <label for="optimizeAllowResize">Allow smaller dimensions to meet target KB</label>
             </div>
+            <p id="optimizeResult" class="hint output-result" role="status"></p>
         </div>
 
         <div id="tab-export" class="tab-content stack">
@@ -1526,23 +1549,24 @@
                 <label for="targetFileSize" class="field-label">Target file size (KB, optional for JPG/WEBP)</label>
                 <input type="number" id="targetFileSize" placeholder="e.g., 500">
             </div>
+            <div class="check-row">
+                <input id="exportAllowResize" type="checkbox">
+                <label for="exportAllowResize">Allow smaller dimensions to meet target KB</label>
+            </div>
             <div class="stack-sm">
+                <button id="previewExport" class="btn" disabled>Preview compressed image</button>
                 <button id="downloadActiveButton" class="btn btn-primary" disabled title="Download the currently active edited image">
                     <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>Download Active Image
                 </button>
-                <button id="downloadAllButton" class="btn" disabled title="Download all processed images as individual files">
-                    <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Download All Processed
+                <button id="downloadAllButton" class="btn" disabled title="Download all processed images in one ZIP">
+                    <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Download All as ZIP
                 </button>
                 <div class="inline-actions">
                     <button id="copyImageButton" class="btn" disabled title="Copy the active image as PNG"><svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>Copy</button>
                     <button id="shareImageButton" class="btn" disabled title="Share the active image"><svg class="icon" aria-hidden="true"><use href="#i-share"></use></svg>Share</button>
                 </div>
             </div>
-            <div id="exportLoader" class="loader-box">
-                <div class="loader"></div>
-                <p>Processing…</p>
-            </div>
-            <p id="exportMessage" class="hint"></p>
+            <p id="exportMessage" class="hint output-result" role="status"></p>
         </div>
 
         <div class="panel-spacer"></div>
@@ -1611,6 +1635,21 @@
         </div>
     </dialog>
 
+    <dialog id="outputPreview" class="confirm-dialog preview-dialog" aria-labelledby="outputPreviewTitle">
+        <div class="confirm-dialog-inner">
+            <h2 id="outputPreviewTitle">Compression preview</h2>
+            <p id="previewSummary"></p>
+            <div id="previewStage" class="preview-stage"><img id="previewImage" alt="Compressed output"></div>
+            <p id="previewLabel" aria-live="polite">Compressed output</p>
+            <div class="preview-toolbar">
+                <button id="previewCompare" class="btn" aria-pressed="false">Show before compression</button>
+                <button id="previewActual" class="btn" aria-pressed="false">View at 1:1</button>
+                <button id="previewDownload" class="btn btn-primary">Download this image</button>
+                <button id="previewClose" class="btn">Close</button>
+            </div>
+            <p class="hint">Compare at matching output dimensions. At 1:1, scroll to inspect detail. Preview shows the active image only.</p>
+        </div>
+    </dialog>
     <div id="notificationArea"></div>
 
     <script>
@@ -1722,13 +1761,32 @@
         const cancelDrawBtn = getEl('cancelDraw');
 
         // Optimize Tab
+        const quickPreset = getEl('quickPreset');
+        const quickDownload = getEl('quickDownload');
+        const quickPreview = getEl('quickPreview');
+        const favoritePreset = getEl('favoritePreset');
+        const optimizeAllowResize = getEl('optimizeAllowResize');
+        const exportAllowResize = getEl('exportAllowResize');
+        const optimizeResult = getEl('optimizeResult');
+        const previewExport = getEl('previewExport');
+        const outputPreview = getEl('outputPreview');
+        const previewImage = getEl('previewImage');
+        const previewStage = getEl('previewStage');
+        const previewSummary = getEl('previewSummary');
+        const previewCompare = getEl('previewCompare');
+        const previewActual = getEl('previewActual');
+        const previewDownload = getEl('previewDownload');
+        const previewClose = getEl('previewClose');
+        const previewLabel = getEl('previewLabel');
+        let previewOutput = null;
+        let previewSource = '';
+
         const optimizeDesktopBtn = getEl('optimizeDesktop');
         const optimizeMobileBtn = getEl('optimizeMobile');
         const optimizeSectionPairBtn = getEl('optimizeSectionPair');
         const optimizeShopifyBtn = getEl('optimizeShopify');
         const optimizeFirebaseBtn = getEl('optimizeFirebase');
         const optimizeAll = getEl('optimizeAll');
-        const optimizeLoader = getEl('optimizeLoader');
         const customPresetName = getEl('customPresetName');
         const customPresetWidth = getEl('customPresetWidth');
         const customPresetHeight = getEl('customPresetHeight');
@@ -1753,7 +1811,6 @@
         const downloadAllButton = getEl('downloadAllButton');
         const copyImageButton = getEl('copyImageButton');
         const shareImageButton = getEl('shareImageButton');
-        const exportLoader = getEl('exportLoader');
         const exportMessage = getEl('exportMessage');
 
         // Canvas Controls
@@ -1819,6 +1876,14 @@
             themeToggle.setAttribute('aria-label', label);
             const meta = queryEl('meta[name="theme-color"]');
             if (meta) meta.setAttribute('content', theme === 'dark' ? '#0c0e12' : '#f3f4f7');
+        }
+
+        function readPreference(key) {
+            try { return localStorage.getItem(key) || ''; } catch (error) { return ''; }
+        }
+
+        function writePreference(key, value) {
+            try { localStorage.setItem(key, value); } catch (error) { /* storage unavailable */ }
         }
 
         // --- UTILITY FUNCTIONS ---
@@ -2007,6 +2072,7 @@
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const newTab = button.dataset.tab;
+                    writePreference('freemaged-last-tab', newTab);
                     
                     if (newTab !== 'crop' && isCropping) cancelCropMode();
                     if (newTab !== 'draw' && isDrawing) cancelDrawMode();
@@ -2053,6 +2119,7 @@
                 penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, textToolBtn, drawColorInput, lineWidthSlider,
                 drawTextInput, textSizeSlider, textOpacitySlider, textBold, textOutline, textPlacement, placeTextBtn,
                 applyDrawBtn, cancelDrawBtn, copyImageButton, shareImageButton,
+                quickDownload, quickPreview, previewExport,
                 optimizeDesktopBtn, optimizeMobileBtn, optimizeSectionPairBtn, optimizeShopifyBtn, optimizeFirebaseBtn,
                 optimizeAll, runCustomPresetBtn, zoomInBtn, zoomOutBtn, actualSizeBtn, fitViewBtn, compareBtn, fullscreenBtn
             ];
@@ -2071,6 +2138,7 @@
                 brightnessSlider, contrastSlider, saturationSlider, grayscaleSlider,
                 penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, textToolBtn, drawColorInput, lineWidthSlider,
                 drawTextInput, textSizeSlider, textOpacitySlider, textBold, textOutline, textPlacement, placeTextBtn,
+                quickDownload, quickPreview, previewExport,
                 optimizeDesktopBtn, optimizeMobileBtn, optimizeSectionPairBtn, optimizeShopifyBtn, optimizeFirebaseBtn,
                 copyImageButton, shareImageButton,
                 zoomInBtn, zoomOutBtn, actualSizeBtn, fitViewBtn, compareBtn, fullscreenBtn
@@ -2281,6 +2349,7 @@
             loadedFileNameEl.textContent = '';
             fileNameInput.value = 'edited_image';
             exportMessage.textContent = '';
+            optimizeResult.textContent = '';
 
             disableAllControls();
             resetResizeControlsForActive();
@@ -3379,118 +3448,270 @@
             return format === 'image/jpeg' ? 'jpg' : format.split('/')[1];
         }
 
-        // Renders one preset from one local image and triggers its download.
-        async function downloadOptimizedPreset(imageData, preset) {
-            const { name, suffix, ...renderOptions } = preset;
-
-            const dataUrl = await processImageForOptimization(imageData.current, renderOptions);
-            if (!dataUrl) {
-                throw new Error(`${name} optimization failed to produce an image.`);
-            }
-
-            const blob = await dataURLtoBlob(dataUrl);
-            const finalFileName = `${imageData.name}_${suffix}.${extensionForFormat(preset.format)}`;
+        function downloadBlob(blob, name) {
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = finalFileName;
+            link.href = url;
+            link.download = name;
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-            return finalFileName;
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 30000);
         }
 
-        // Takes one preset or a list of them. Browsers swallow downloads fired
-        // back to back, so batches wait between files — same guard the
-        // "Download All Processed" path uses.
-        async function applyOptimization(presets) {
-            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return;
-            if (isOptimizing) return;
-
-            const presetQueue = Array.isArray(presets) ? presets : [presets];
-            const imageQueue = optimizeAll.checked && imageStore.length > 1
-                ? imageStore
-                : [imageStore[activeImageIndex]];
-            isOptimizing = true;
-            optimizeLoader.classList.remove('hidden');
-            optimizeLoader.style.display = 'flex';
-
-            try {
-                const fileNames = [];
-                for (const imageData of imageQueue) {
-                    for (const preset of presetQueue) {
-                        if (fileNames.length > 0) await new Promise(resolve => setTimeout(resolve, 300));
-                        fileNames.push(await downloadOptimizedPreset(imageData, preset));
-                    }
+        // ZIP "store" entries: image formats are already compressed. No library or server.
+        async function createZip(outputs) {
+            const parts = [], directory = [];
+            let offset = 0;
+            const names = new Set();
+            for (const output of outputs) {
+                let name = output.name.replace(/[\\/]/g, '_');
+                const dot = name.lastIndexOf('.');
+                const stem = dot > 0 ? name.slice(0, dot) : name;
+                const ext = dot > 0 ? name.slice(dot) : '';
+                let count = 2;
+                while (names.has(name)) name = `${stem}_${count++}${ext}`;
+                names.add(name);
+                const filename = new TextEncoder().encode(name);
+                const bytes = new Uint8Array(await output.blob.arrayBuffer());
+                let crc = 0xffffffff;
+                for (const byte of bytes) {
+                    crc ^= byte;
+                    for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
                 }
+                crc = (crc ^ 0xffffffff) >>> 0;
+                if (filename.length > 65535 || offset + bytes.length + filename.length + 30 > 0xffffffff) {
+                    throw new Error('This batch is too large for one ZIP. Export fewer images at a time.');
+                }
+                const header = new Uint8Array(30 + filename.length);
+                const h = new DataView(header.buffer);
+                h.setUint32(0, 0x04034b50, true);
+                h.setUint16(4, 20, true);
+                h.setUint16(6, 0x0800, true); // UTF-8 filenames
+                h.setUint16(12, 33, true); // 1980-01-01
+                h.setUint32(14, crc, true);
+                h.setUint32(18, bytes.length, true);
+                h.setUint32(22, bytes.length, true);
+                h.setUint16(26, filename.length, true);
+                header.set(filename, 30);
+                const central = new Uint8Array(46 + filename.length);
+                const c = new DataView(central.buffer);
+                c.setUint32(0, 0x02014b50, true);
+                c.setUint16(4, 20, true);
+                central.set(header.subarray(4, 30), 6);
+                c.setUint32(42, offset, true);
+                central.set(filename, 46);
+                parts.push(header, output.blob);
+                directory.push(central);
+                offset += header.length + bytes.length;
+            }
+            const directorySize = directory.reduce((sum, entry) => sum + entry.length, 0);
+            if (outputs.length > 65535 || offset + directorySize > 0xffffffff) throw new Error('Export fewer images per ZIP.');
+            const end = new Uint8Array(22);
+            const e = new DataView(end.buffer);
+            e.setUint32(0, 0x06054b50, true);
+            e.setUint16(8, outputs.length, true);
+            e.setUint16(10, outputs.length, true);
+            e.setUint32(12, directorySize, true);
+            e.setUint32(16, offset, true);
+            return new Blob([...parts, ...directory, end], { type: 'application/zip' });
+        }
 
-                showNotification(fileNames.length === 1
-                    ? `"${fileNames[0]}" downloaded!`
-                    : `${fileNames.length} files downloaded: ${fileNames.join(', ')}`, 'success');
+        function outputSummary(output) {
+            const original = output.originalBytes;
+            const delta = original ? (1 - output.blob.size / original) * 100 : 0;
+            const savings = original ? (delta >= 0 ? `${delta > 99.9 ? ">99.9" : delta.toFixed(1)}% smaller` : `${(-delta).toFixed(1)}% larger`) : '';
+            return `${output.name}\n${formatBytes(original)} → ${formatBytes(output.blob.size)}${savings ? ` · ${savings}` : ''}\n${output.width} × ${output.height} px${output.targetKb ? ` · target ${output.targetKb} KB met` : ''}`;
+        }
 
+        async function renderOutput(imageData, options, name) {
+            const dataUrl = await processImageForOptimization(imageData.current, options);
+            const blob = await dataURLtoBlob(dataUrl);
+            const decoded = new Image();
+            decoded.src = dataUrl;
+            await decoded.decode();
+            return { blob, name, width: decoded.width, height: decoded.height,
+                originalBytes: imageData.originalFileSizeBytes,
+                targetKb: options.format === 'image/png' ? null : options.targetKb };
+        }
+
+        async function runOutputs(jobs, status, preview = false, forceZip = false) {
+            if (isOptimizing || !jobs.length) return;
+            isOptimizing = true;
+            const buttons = [quickDownload, quickPreview, previewExport, downloadActiveButton, downloadAllButton,
+                optimizeDesktopBtn, optimizeMobileBtn, optimizeSectionPairBtn, optimizeShopifyBtn, optimizeFirebaseBtn, runCustomPresetBtn];
+            buttons.forEach(button => button.disabled = true);
+            try {
+                const outputs = [];
+                for (const [index, job] of jobs.entries()) {
+                    status.textContent = `Processing ${index + 1} of ${jobs.length}…`;
+                    // Let the progress message paint before synchronous canvas encoding.
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                    outputs.push(await renderOutput(job.image, job.options, job.name));
+                }
+                if (preview) {
+                    await showOutputPreview(outputs[0], jobs[0].image.current);
+                    status.textContent = outputSummary(outputs[0]);
+                } else {
+                    const zip = forceZip || outputs.length > 1;
+                    downloadBlob(zip ? await createZip(outputs) : outputs[0].blob, zip ? 'freemaged-images.zip' : outputs[0].name);
+                    status.textContent = outputs.length === 1 ? outputSummary(outputs[0]) :
+                        `${outputs.length} images · ${formatBytes(outputs.reduce((sum, item) => sum + item.blob.size, 0))} combined output\n\n${outputs.map(outputSummary).join('\n\n')}`;
+                    showNotification(zip ? 'ZIP ready. Download started.' : outputSummary(outputs[0]), 'success', 5000);
+                }
+                return true;
             } catch (error) {
-                console.error("Optimization Error:", error);
-                showNotification(`Error during optimization: ${error.message}`, 'error');
+                status.textContent = error.message;
+                showNotification(error.message, 'warning', 7000);
+                return false;
             } finally {
                 isOptimizing = false;
-                optimizeLoader.classList.add('hidden');
-                optimizeLoader.style.display = 'none';
+                if (activeImageIndex === -1) disableAllControls();
+                else enableAllControls();
             }
         }
 
-        async function processImageForOptimization(img, { maxWidth, maxHeight, format, quality, targetKb }) {
-            let newW = img.width;
-            let newH = img.height;
-            const ratio = img.width / img.height;
-
-            if (maxWidth && newW > maxWidth) {
-                newW = maxWidth;
-                newH = Math.round(newW / ratio);
-            }
-            if (maxHeight && newH > maxHeight) {
-                newH = maxHeight;
-                newW = Math.round(newH * ratio);
-            }
-            
-            newW = Math.round(newW);
-            newH = Math.round(newH);
-
-            const resizeCanvas = document.createElement('canvas');
-            resizeCanvas.width = newW;
-            resizeCanvas.height = newH;
-            const resizeCtx = resizeCanvas.getContext('2d');
-            resizeCtx.drawImage(img, 0, 0, newW, newH);
-
-            if (targetKb && (format === 'image/jpeg' || format === 'image/webp')) {
-                let currentQuality = quality || 0.9;
-                let minQ = 0.01, maxQ = 1.0;
-                let bestDataUrl = '';
-                
-                const highQualityDataUrl = resizeCanvas.toDataURL(format, maxQ);
-                const highQualityBlob = await dataURLtoBlob(highQualityDataUrl);
-                if (highQualityBlob.size / 1024 <= targetKb) {
-                    return highQualityDataUrl;
+        async function applyOptimization(presets, preview = false) {
+            if (activeImageIndex === -1) return;
+            const presetQueue = Array.isArray(presets) ? presets : [presets];
+            const images = !preview && optimizeAll.checked ? imageStore : [imageStore[activeImageIndex]];
+            const jobs = images.flatMap(image => presetQueue.map(preset => ({
+                image: { ...image },
+                options: { ...preset, allowResize: optimizeAllowResize.checked },
+                name: `${image.name}_${preset.suffix}.${extensionForFormat(preset.format)}`
+            })));
+            if (await runOutputs(jobs, optimizeResult, preview)) {
+                const preset = presetQueue[0];
+                const key = preset.id || Object.keys(OPTIMIZE_PRESETS).find(key => OPTIMIZE_PRESETS[key] === preset);
+                if (key) {
+                    writePreference('freemaged-last-preset', key);
+                    quickPreset.value = key;
+                    updateFavoriteLabel();
                 }
+            }
+        }
 
-                for (let i = 0; i < 8; i++) { // Binary search for quality
-                    const dataUrl = resizeCanvas.toDataURL(format, currentQuality);
-                    const tempBlob = await dataURLtoBlob(dataUrl);
-                    const currentSizeKB = tempBlob.size / 1024;
-
-                    if (currentSizeKB <= targetKb) {
-                        bestDataUrl = dataUrl;
-                        minQ = currentQuality;
-                    } else {
-                        maxQ = currentQuality;
+        async function processImageForOptimization(img, { maxWidth, maxHeight, format, quality, targetKb, allowResize = false }) {
+            if (format !== 'image/png' && targetKb !== undefined && targetKb !== null && !Number.isNaN(targetKb) && (!Number.isFinite(targetKb) || targetKb <= 0)) {
+                throw new Error('Enter a target size greater than zero.');
+            }
+            const scale = Math.min(1, maxWidth ? maxWidth / img.width : 1, maxHeight ? maxHeight / img.height : 1);
+            let width = Math.max(1, Math.round(img.width * scale));
+            let height = Math.max(1, Math.round(img.height * scale));
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const targetBytes = targetKb * 1024;
+            for (;;) {
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(img, 0, 0, width, height);
+                const encode = async q => {
+                    const url = canvas.toDataURL(format, q);
+                    if (!url.startsWith(`data:${format};`)) throw new Error('This browser cannot export the selected format.');
+                    return { url, bytes: (await dataURLtoBlob(url)).size };
+                };
+                if (!targetKb || format === 'image/png') return (await encode(quality)).url;
+                const highest = await encode(1);
+                if (highest.bytes <= targetBytes) return highest.url;
+                const lowest = await encode(0.1);
+                if (lowest.bytes <= targetBytes) {
+                    let low = 0.1, high = 1, best = lowest;
+                    for (let i = 0; i < 8; i++) {
+                        const mid = (low + high) / 2;
+                        const result = await encode(mid);
+                        if (result.bytes <= targetBytes) { best = result; low = mid; }
+                        else high = mid;
                     }
-                    if ((maxQ - minQ) < 0.02) break;
-                    currentQuality = (minQ + maxQ) / 2;
+                    return best.url;
                 }
-                return bestDataUrl || resizeCanvas.toDataURL(format, minQ);
-            } else {
-                return resizeCanvas.toDataURL(format, quality);
+                if (!allowResize) {
+                    throw new Error(`At ${width} × ${height} px, output at 10% quality is ${formatBytes(lowest.bytes)}, above your ${targetKb} KB target. Enable "Allow smaller dimensions" or increase the target.`);
+                }
+                if (width === 1 && height === 1) throw new Error(`The ${targetKb} KB target is too small even at 1 × 1 px. Increase the target.`);
+                const factor = Math.min(0.85, Math.sqrt(targetBytes / lowest.bytes) * 0.9);
+                const nextScale = Math.min(width / img.width, height / img.height) * factor;
+                width = Math.max(1, Math.floor(img.width * nextScale));
+                height = Math.max(1, Math.floor(img.height * nextScale));
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
+
+        function updateFavoriteLabel() {
+            favoritePreset.textContent = readPreference('freemaged-favorite-preset') === quickPreset.value ? 'Remove favorite' : 'Set as favorite';
+        }
+
+        function renderQuickPresets() {
+            const candidates = [quickPreset.value, readPreference('freemaged-favorite-preset'), readPreference('freemaged-last-preset')];
+            quickPreset.replaceChildren();
+            for (const [key, preset] of [...Object.entries(OPTIMIZE_PRESETS), ...readCustomPresets().map(item => [item.id, item])]) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = preset.name;
+                quickPreset.appendChild(option);
+            }
+            const selected = candidates.find(value => Array.from(quickPreset.options).some(option => option.value === value));
+            if (selected) quickPreset.value = selected;
+            updateFavoriteLabel();
+        }
+
+        function selectedQuickPreset() {
+            return OPTIMIZE_PRESETS[quickPreset.value] || readCustomPresets().find(item => item.id === quickPreset.value);
+        }
+
+        quickPreset.addEventListener('change', updateFavoriteLabel);
+        favoritePreset.addEventListener('click', () => {
+            writePreference('freemaged-favorite-preset', readPreference('freemaged-favorite-preset') === quickPreset.value ? '' : quickPreset.value);
+            updateFavoriteLabel();
+        });
+        quickDownload.addEventListener('click', () => applyOptimization(selectedQuickPreset()));
+        quickPreview.addEventListener('click', () => applyOptimization(selectedQuickPreset(), true));
+        renderQuickPresets();
+        const rememberedTab = Array.from(tabButtons).find(button => button.dataset.tab === readPreference('freemaged-last-tab'));
+        if (rememberedTab) rememberedTab.click();
+
+        async function showOutputPreview(output, source) {
+            previewOutput = output;
+            const canvas = document.createElement('canvas');
+            canvas.width = output.width;
+            canvas.height = output.height;
+            canvas.getContext('2d').drawImage(source, 0, 0, output.width, output.height);
+            previewSource = canvas.toDataURL('image/png');
+            previewImage.src = URL.createObjectURL(output.blob);
+            previewOutput.url = previewImage.src;
+            previewSummary.textContent = outputSummary(output);
+            previewCompare.setAttribute('aria-pressed', 'false');
+            previewCompare.textContent = 'Show before compression';
+            previewLabel.textContent = 'Compressed output';
+            previewImage.alt = 'Compressed output';
+            previewStage.classList.remove('actual');
+            previewActual.setAttribute('aria-pressed', 'false');
+            previewActual.textContent = 'View at 1:1';
+            outputPreview.showModal();
+        }
+
+        previewCompare.addEventListener('click', () => {
+            const before = previewCompare.getAttribute('aria-pressed') !== 'true';
+            previewCompare.setAttribute('aria-pressed', String(before));
+            previewCompare.textContent = before ? 'Show compressed output' : 'Show before compression';
+            previewImage.src = before ? previewSource : previewOutput.url;
+            previewLabel.textContent = before ? 'Before compression · at output dimensions' : 'Compressed output';
+            previewImage.alt = previewLabel.textContent;
+        });
+        previewActual.addEventListener('click', () => {
+            const actual = previewStage.classList.toggle('actual');
+            previewActual.setAttribute('aria-pressed', String(actual));
+            previewActual.textContent = actual ? 'Fit preview' : 'View at 1:1';
+        });
+        previewDownload.addEventListener('click', () => {
+            if (previewOutput) downloadBlob(previewOutput.blob, previewOutput.name);
+        });
+        previewClose.addEventListener('click', () => outputPreview.close());
+        outputPreview.addEventListener('close', () => {
+            if (previewOutput) URL.revokeObjectURL(previewOutput.url);
+            previewOutput = null;
+            previewSource = '';
+            previewImage.removeAttribute('src');
+        });
 
         optimizeDesktopBtn.addEventListener('click', () => applyOptimization(OPTIMIZE_PRESETS.desktop));
         optimizeMobileBtn.addEventListener('click', () => applyOptimization(OPTIMIZE_PRESETS.mobile));
@@ -3562,6 +3783,7 @@
             else presets.push(preset);
             if (writeCustomPresets(presets)) {
                 renderCustomPresetOptions(preset.id);
+                renderQuickPresets();
                 showNotification(`Preset "${name}" saved locally.`);
             }
         });
@@ -3573,6 +3795,7 @@
             if (!removed) return;
             if (writeCustomPresets(presets.filter(preset => preset.id !== selectedId))) {
                 renderCustomPresetOptions();
+                renderQuickPresets();
                 showNotification(`Preset "${removed.name}" deleted.`, 'info');
             }
         });
@@ -3594,97 +3817,29 @@
              if(qualitySpan) qualitySpan.textContent = qualitySlider.value;
         });
 
-        async function exportSingleImage(imgData, baseFilename, exportFormat, exportQuality, targetKB) { 
-            let fileExtension = exportFormat.split('/')[1];
-            if (exportFormat === 'image/jpeg') fileExtension = 'jpg';
-            const finalFileName = `${baseFilename}.${fileExtension}`;
-
-            const dataUrl = await processImageForOptimization(imgData.current, {
-                maxWidth: imgData.current.width,
-                maxHeight: imgData.current.height,
-                format: exportFormat,
-                quality: exportQuality,
-                targetKb: targetKB
-            });
-            
-            if (!dataUrl) {
-                throw new Error("Failed to generate image for download.");
-            }
-
-            const blob = await dataURLtoBlob(dataUrl);
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = finalFileName;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-            return finalFileName; 
+        function exportOptions() {
+            return { format: fileFormatSelect.value, quality: parseFloat(qualitySlider.value),
+                targetKb: parseFloat(targetFileSizeInput.value), allowResize: exportAllowResize.checked };
         }
 
-        downloadActiveButton.addEventListener('click', async () => {
-            if (activeImageIndex === -1 || !imageStore[activeImageIndex]) return; 
-            
-            exportLoader.classList.remove('hidden');
-            exportLoader.style.display = 'flex';
-            exportMessage.textContent = `Processing active image...`;
-            downloadActiveButton.disabled = true;
-            downloadAllButton.disabled = true;
+        function activeExportJob() {
+            const image = imageStore[activeImageIndex];
+            const options = exportOptions();
+            return { image: { ...image }, options,
+                name: `${fileNameInput.value || `${image.name}_edited`}.${extensionForFormat(options.format)}` };
+        }
 
-            const activeImgData = imageStore[activeImageIndex];
-            const baseName = fileNameInput.value || `${activeImgData.name}_edited`;
-            const format = fileFormatSelect.value;
-            let quality = parseFloat(qualitySlider.value);
-            const targetSizeKB = parseFloat(targetFileSizeInput.value);
-
-            try {
-                const exportedName = await exportSingleImage(activeImgData, baseName, format, quality, targetSizeKB);
-                showNotification(`"${exportedName}" downloaded successfully!`);
-                exportMessage.textContent = `"${exportedName}" downloaded.`;
-            } catch (error) {
-                console.error(`Export error for active image:`, error);
-                showNotification(`Error exporting active image: ${error.message}`, 'error');
-                exportMessage.textContent = `Error exporting active image.`;
-            } finally {
-                exportLoader.classList.add('hidden');
-                exportLoader.style.display = 'none';
-                enableAllControls();
-            }
+        downloadActiveButton.addEventListener('click', () => {
+            if (activeImageIndex !== -1) runOutputs([activeExportJob()], exportMessage);
         });
-
-        downloadAllButton.addEventListener('click', async () => {
-            if (imageStore.length === 0) return;
-
-            exportLoader.classList.remove('hidden');
-            exportLoader.style.display = 'flex';
-            downloadActiveButton.disabled = true;
-            downloadAllButton.disabled = true;
-            let successCount = 0;
-            let errorCount = 0;
-
-            const globalFormat = fileFormatSelect.value;
-            const globalQuality = parseFloat(qualitySlider.value);
-            const globalTargetSizeKB = parseFloat(targetFileSizeInput.value);
-
-            for (let i = 0; i < imageStore.length; i++) {
-                const imgData = imageStore[i];
-                exportMessage.textContent = `Processing image ${i + 1} of ${imageStore.length}: ${imgData.name}.${imgData.ext}`;
-                try {
-                    const baseName = `${imgData.name}_edited_batch_${i+1}`; 
-                    await exportSingleImage(imgData, baseName, globalFormat, globalQuality, globalTargetSizeKB);
-                    successCount++;
-                    await new Promise(resolve => setTimeout(resolve, 200)); 
-                } catch (error) {
-                    console.error(`Batch export error for ${imgData.name}:`, error);
-                    errorCount++;
-                }
-            }
-
-            exportLoader.classList.add('hidden');
-            exportLoader.style.display = 'none';
-            enableAllControls();
-            const finalMessage = `${successCount} image(s) downloaded. ${errorCount > 0 ? errorCount + ' error(s).' : ''}`;
-            exportMessage.textContent = finalMessage;
-            showNotification(finalMessage, errorCount > 0 ? 'warning' : (successCount > 0 ? 'success': 'info'));
+        previewExport.addEventListener('click', () => {
+            if (activeImageIndex !== -1) runOutputs([activeExportJob()], exportMessage, true);
+        });
+        downloadAllButton.addEventListener('click', () => {
+            const options = exportOptions();
+            const jobs = imageStore.map(image => ({ image: { ...image }, options,
+                name: `${image.name}_edited.${extensionForFormat(options.format)}` }));
+            runOutputs(jobs, exportMessage, false, true);
         });
 
         async function activeImageBlob(format = fileFormatSelect.value) {
@@ -3694,7 +3849,8 @@
                 maxHeight: imageData.current.height,
                 format,
                 quality: parseFloat(qualitySlider.value),
-                targetKb: format === 'image/png' ? undefined : parseFloat(targetFileSizeInput.value)
+                targetKb: format === 'image/png' ? undefined : parseFloat(targetFileSizeInput.value),
+                allowResize: exportAllowResize.checked
             });
             return dataURLtoBlob(dataUrl);
         }

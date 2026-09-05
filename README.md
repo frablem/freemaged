@@ -34,6 +34,7 @@ If you prefer to run the editor offline, you can download the project and open i
 - **v2.1.2:** Matched the vertical padding and height of the primary Choose Files and Reset Active Image actions for a more consistent control rhythm.
 - **v2.1.3:** Tightened the gap between the primary Choose Files and Reset Active Image actions to match the surrounding spacing rhythm.
 
+- **v2.2:** Added actual output size, savings, and dimensions; compressed-image previews with before/after and 1:1 inspection; favorite and last-used quick presets plus remembered tabs; verified target-size exports with optional dimension reduction; and local ZIP downloads for image batches and desktop/mobile pairs.
 
 ## Made by
 
