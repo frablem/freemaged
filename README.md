@@ -14,7 +14,7 @@ The project uses hand-written CSS and vanilla JavaScript with zero dependencies 
 ### Online (Recommended)
 
 The easiest way to use Freemaged is to visit the official website:
-https://freemaged.com
+https://freemaged.fran.md
 
 ### Locally
 
