@@ -36,9 +36,9 @@ If you prefer to run the editor offline, you can download the project and open i
 
 - **v2.2:** Added actual output size, savings, and dimensions; compressed-image previews with before/after and 1:1 inspection; favorite and last-used quick presets plus remembered tabs; verified target-size exports with optional dimension reduction; and local ZIP downloads for image batches and desktop/mobile pairs.
 
+- **v2.2.1:** Added PNG target-size exports with automatic dimension reduction, verified output bytes, and preserved transparency. PNG targets also work in previews, batches, and custom presets.
+
 ## Made by
 
 This app was made by Francisco Fernandez with the help of AI.\
 [fran.md](https://fran.md)
-
-- **v2.2.1:** Explained why PNG exports cannot target a file size in KB, kept those controls consistent after resizing and exporting, and preserved PNG dimension resizing and downloads.

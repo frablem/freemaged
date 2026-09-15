@@ -1521,8 +1521,9 @@
             </details>
             <div class="check-row">
                 <input id="optimizeAllowResize" type="checkbox">
-                <label for="optimizeAllowResize">Allow smaller dimensions to meet target KB</label>
+                <label for="optimizeAllowResize">Allow smaller JPG/WEBP dimensions to meet target KB</label>
             </div>
+            <p class="hint">PNG presets with a target KB automatically shrink dimensions and preserve transparency.</p>
             <p id="optimizeResult" class="hint output-result" role="status"></p>
         </div>
 
@@ -1546,9 +1547,9 @@
                 <input type="range" id="quality" min="0.1" max="1" step="0.05" value="1">
             </div>
             <div>
-                <label for="targetFileSize" class="field-label">Target file size (KB, optional for JPG/WEBP)</label>
+                <label for="targetFileSize" class="field-label">Target file size (KB, optional)</label>
                 <input type="number" id="targetFileSize" placeholder="e.g., 500" aria-describedby="targetFileSizeHint">
-                <p id="targetFileSizeHint" class="hint" hidden>PNG keeps full quality, so target KB is unavailable. You can still resize and download as PNG. Choose WEBP or JPG to target a file size.</p>
+                <p id="targetFileSizeHint" class="hint" hidden>To meet a PNG target, dimensions shrink automatically and transparency is preserved. Leave blank to keep the current dimensions.</p>
             </div>
             <div class="check-row">
                 <input id="exportAllowResize" type="checkbox">
@@ -3535,7 +3536,7 @@
             await decoded.decode();
             return { blob, name, width: decoded.width, height: decoded.height,
                 originalBytes: imageData.originalFileSizeBytes,
-                targetKb: options.format === 'image/png' ? null : options.targetKb };
+                targetKb: options.targetKb };
         }
 
         async function runOutputs(jobs, status, preview = false, forceZip = false) {
@@ -3595,7 +3596,7 @@
         }
 
         async function processImageForOptimization(img, { maxWidth, maxHeight, format, quality, targetKb, allowResize = false }) {
-            if (format !== 'image/png' && targetKb !== undefined && targetKb !== null && !Number.isNaN(targetKb) && (!Number.isFinite(targetKb) || targetKb <= 0)) {
+            if (targetKb !== undefined && targetKb !== null && !Number.isNaN(targetKb) && (!Number.isFinite(targetKb) || targetKb <= 0)) {
                 throw new Error('Enter a target size greater than zero.');
             }
             const scale = Math.min(1, maxWidth ? maxWidth / img.width : 1, maxHeight ? maxHeight / img.height : 1);
@@ -3613,10 +3614,11 @@
                     if (!url.startsWith(`data:${format};`)) throw new Error('This browser cannot export the selected format.');
                     return { url, bytes: (await dataURLtoBlob(url)).size };
                 };
-                if (!targetKb || format === 'image/png') return (await encode(quality)).url;
+                if (!targetKb) return (await encode(quality)).url;
                 const highest = await encode(1);
                 if (highest.bytes <= targetBytes) return highest.url;
-                const lowest = await encode(0.1);
+                // PNG has no quality setting; meet its target by reducing dimensions.
+                const lowest = format === 'image/png' ? highest : await encode(0.1);
                 if (lowest.bytes <= targetBytes) {
                     let low = 0.1, high = 1, best = lowest;
                     for (let i = 0; i < 8; i++) {
@@ -3627,10 +3629,10 @@
                     }
                     return best.url;
                 }
-                if (!allowResize) {
+                if (!allowResize && format !== 'image/png') {
                     throw new Error(`At ${width} × ${height} px, output at 10% quality is ${formatBytes(lowest.bytes)}, above your ${targetKb} KB target. Enable "Allow smaller dimensions" or increase the target.`);
                 }
-                if (width === 1 && height === 1) throw new Error(`The ${targetKb} KB target is too small even at 1 × 1 px. Increase the target.`);
+                if (width === 1 && height === 1) throw new Error(`The ${targetKb} KB target is too small: output is ${formatBytes(lowest.bytes)} even at 1 × 1 px. Increase the target.`);
                 const factor = Math.min(0.85, Math.sqrt(targetBytes / lowest.bytes) * 0.9);
                 const nextScale = Math.min(width / img.width, height / img.height) * factor;
                 width = Math.max(1, Math.floor(img.width * nextScale));
@@ -3778,7 +3780,7 @@
                 quality: Math.max(0.1, Math.min(1, (parseInt(customPresetQuality.value) || 80) / 100))
             };
             const targetKb = parseInt(customPresetTarget.value);
-            if (targetKb && preset.format !== 'image/png') preset.targetKb = targetKb;
+            if (targetKb) preset.targetKb = targetKb;
             const presets = readCustomPresets();
             const sameNameIndex = presets.findIndex(existing => existing.name.toLowerCase() === name.toLowerCase());
             if (sameNameIndex >= 0) preset.id = presets[sameNameIndex].id;
@@ -3814,8 +3816,9 @@
             const isPng = fileFormatSelect.value === 'image/png';
             qualityContainer.style.display = isPng ? 'none' : 'block';
             targetFileSizeHint.hidden = !isPng;
-            targetFileSizeInput.disabled = isPng || activeImageIndex === -1;
+            targetFileSizeInput.disabled = activeImageIndex === -1;
             exportAllowResize.disabled = isPng || activeImageIndex === -1;
+            exportAllowResize.closest('.check-row').style.display = isPng ? 'none' : '';
         }
         fileFormatSelect.addEventListener('change', updateQualityVisibility);
         qualitySlider.addEventListener('input', () => {
@@ -3855,7 +3858,7 @@
                 maxHeight: imageData.current.height,
                 format,
                 quality: parseFloat(qualitySlider.value),
-                targetKb: format === 'image/png' ? undefined : parseFloat(targetFileSizeInput.value),
+                targetKb: parseFloat(targetFileSizeInput.value),
                 allowResize: exportAllowResize.checked
             });
             return dataURLtoBlob(dataUrl);
