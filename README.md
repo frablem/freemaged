@@ -38,6 +38,8 @@ If you prefer to run the editor offline, you can download the project and open i
 
 - **v2.2.1:** Added PNG target-size exports with automatic dimension reduction, verified output bytes, and preserved transparency. PNG targets also work in previews, batches, and custom presets. Simplified the About page with plain wording about the tool, local settings, and page-view analytics.
 
+- **v2.2.2:** Made target file size the main export control across formats. Manual JPG/WEBP quality is under Advanced and only available without a target; export guidance explains automatic compression and dimension changes.
+
 ## Made by
 
 This app was made by Francisco Fernandez with the help of AI.\

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.2.1</title>
+    <title>Freemaged - Free Image Editor v2.2.2</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.fran.md/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.2.1 — hand-written design system, zero dependencies
+           Freemaged v2.2.2 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -1202,7 +1202,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2.1</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2.2</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1542,19 +1542,21 @@
                     </select>
                 </div>
             </div>
-            <div id="qualityContainer">
-                <label for="quality" class="field-label">Quality <span class="val" id="qualityValue">1</span></label>
-                <input type="range" id="quality" min="0.1" max="1" step="0.05" value="1">
-            </div>
             <div>
                 <label for="targetFileSize" class="field-label">Target file size (KB, optional)</label>
                 <input type="number" id="targetFileSize" placeholder="e.g., 500" aria-describedby="targetFileSizeHint">
-                <p id="targetFileSizeHint" class="hint" hidden>To meet a PNG target, dimensions shrink automatically and transparency is preserved. Leave blank to keep the current dimensions.</p>
+                <p id="targetFileSizeHint" class="hint">Leave blank for full quality at the current dimensions.</p>
             </div>
             <div class="check-row">
                 <input id="exportAllowResize" type="checkbox">
                 <label for="exportAllowResize">Allow smaller dimensions to meet target KB</label>
             </div>
+            <details id="qualityContainer" class="subpanel">
+                <summary>Advanced</summary>
+                <label for="quality" class="field-label">Quality <span class="val" id="qualityValue">100%</span></label>
+                <input type="range" id="quality" min="0.1" max="1" step="0.05" value="1" aria-describedby="qualityHint">
+                <p id="qualityHint" class="hint">Lower quality makes a smaller file without changing dimensions. Available when no target size is set.</p>
+            </details>
             <div class="stack-sm">
                 <button id="previewExport" class="btn" disabled>Preview compressed image</button>
                 <button id="downloadActiveButton" class="btn btn-primary" disabled title="Download the currently active edited image">
@@ -3814,17 +3816,28 @@
         // --- EXPORT LOGIC ---
         function updateQualityVisibility() {
             const isPng = fileFormatSelect.value === 'image/png';
-            qualityContainer.style.display = isPng ? 'none' : 'block';
-            targetFileSizeHint.hidden = !isPng;
+            const hasTarget = targetFileSizeInput.value.trim() !== '';
+            const qualityPercent = Math.round(parseFloat(qualitySlider.value) * 100);
+            qualityContainer.style.display = isPng || hasTarget ? 'none' : 'block';
+            qualitySlider.disabled = isPng || hasTarget || activeImageIndex === -1;
             targetFileSizeInput.disabled = activeImageIndex === -1;
-            exportAllowResize.disabled = isPng || activeImageIndex === -1;
-            exportAllowResize.closest('.check-row').style.display = isPng ? 'none' : '';
+            exportAllowResize.disabled = isPng || !hasTarget || activeImageIndex === -1;
+            exportAllowResize.closest('.check-row').style.display = isPng || !hasTarget ? 'none' : '';
+            getEl('qualityValue').textContent = `${qualityPercent}%`;
+            if (hasTarget) {
+                targetFileSizeHint.textContent = isPng
+                    ? 'Dimensions shrink automatically to meet your target. Transparency is preserved.'
+                    : 'Quality is chosen automatically to meet your target. Dimensions stay the same unless you allow smaller ones.';
+            } else {
+                targetFileSizeHint.textContent = !isPng && qualityPercent < 100
+                    ? `Exports at ${qualityPercent}% quality and the current dimensions. Adjust quality in Advanced.`
+                    : 'Leave blank for full quality at the current dimensions.';
+                if (isPng) targetFileSizeHint.textContent += ' A PNG target automatically shrinks dimensions and preserves transparency.';
+            }
         }
         fileFormatSelect.addEventListener('change', updateQualityVisibility);
-        qualitySlider.addEventListener('input', () => {
-             const qualitySpan = getEl('qualityValue');
-             if(qualitySpan) qualitySpan.textContent = qualitySlider.value;
-        });
+        targetFileSizeInput.addEventListener('input', updateQualityVisibility);
+        qualitySlider.addEventListener('input', updateQualityVisibility);
 
         function exportOptions() {
             return { format: fileFormatSelect.value, quality: parseFloat(qualitySlider.value),
