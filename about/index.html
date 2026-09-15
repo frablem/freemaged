@@ -18,7 +18,7 @@
     <meta name="twitter:description" content="A small, lightweight tool for quick image edits in your browser.">
     <meta name="twitter:image" content="https://freemaged.fran.md/fav.ico">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0c0e12">
+    <meta name="theme-color" content="#000000">
     <link rel="icon" href="../fav.ico" type="image/x-icon">
 
     <script>
@@ -39,52 +39,164 @@
     </script>
 
     <style>
+        /* Wordmark font: Barlow Condensed ExtraBold, subset to FREEMAGED. Embedded for offline use.
+Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+        */
+        @font-face {
+            font-family: 'Freemaged Wordmark';
+            src: url('data:font/woff2;base64,d09GMgABAAAAAAxoABEAAAAAGdwAAAwKAAFocgAAAAAAAAAAAAAAAAAAAAAAAAAAGiAbgUAcKgZgAEwIgSAJnBURCAqJXIhTATYCJAMgCxIABCAFg0IHIAyBVhsXGFFUjzIUPw9s9yjXhFFWHyNsPvTPNk1DCfF2hCSz/tM3V3/urapO6AgedJgwISF48OAdwXUFtRFRxvx3TWHW7Il+m1ng/9HWq7GogGS4yguQJkCGCb2lhG2WgpJ3vEX9i3q66mjM/e8vANpUWTr/BQJLlvPgW6ZegSB50N4uY/3/X0vtu39+mHSBhQe0EbrGTP5kc/bNTGg3sFPebIhmA1gEheRQEbLsqarQPdU1tkrV+r6NcqV9tGMMM+cHsGNsZgZLHCceUYOv6AwCYEXH1NhUQRFQ7cvryEIJONzUMQD7yuTeNdghAeD9o8fy7O41mDkdCZaYYBajA17yOCBFgwqZIr8B8Ud+h6Ju6StxQORfk8ARNqZnIIEhIKG0tZhuqXYeIK2wxMnmwihye+CNSl6M3F/SO8IJAfAGjwBov3HTkyihCpTMKA3TE15qoC84ik8hgD7xy4gfkKUUB8xhxR8a6CEwUA5JgAClSPgt3V8DGQE0oxN9uumCDP8OIp+KfBx5L/IWCMROrn38OZ32ifyP/7YUz1W6dhoOAtwa+RdVtXnDDLaLtcoindyGFRBp5c9F/rkfsW1UKJMUFLV0v/5/bw0eyRcYzJsi/foa9rtf0R7+ypRt432rB82Dr7C3N2Yxy/TenoQYwSgI2XoBSah6goCzHBIMixYTApqeiZVzx3xFPFWrd15ZeXc3CfPBkbAazFWbkLdHCzcarE7m8EqEuVrsq8cPrgim+RKfllfVDfTkp2VxpIZYki4RJDKjniSHh+1NgybxqVtk/mvxpllu9hu0oxwRXu79nSPuMI8oPbc/2Ng+/LfN/reingfbhBc8NN0lfKYPTp9qp4PmjXohnatsOgGmfisqqCJQSwncBXas3IO+DNpbjqI3gMgIz7hor2NkD3vAayVTpUytQFGKHVS+IQ6al4SCNkJ6m4SJdzImc8zmIcYClYTmdB0pGrup52JRRtvBCHUZQJUVRHWj5c2p2fm/maL7Rh2Z7+Z6J7R7JVuJRRgPGc3gHY9C10uYQBQ/WsDBJvNXizI3AZc3uHeA+lDB1E1EQdoIO/evpUwJpwqjFEZ/Xet8Kx1L1JyENv5hjB+yLBlPthXrwRQGQkiv2syuqsnlPqSFpQ3nNobbAgj32WtB62M7pJSsLLDMiuzKrK/2zDYj4uhOjsFi+TAmotG5ccRMXSdiABWJaP5yTN7ZaF6IoaEPMcFELLjhmtvqtZTp2VWJZdU8oUy3kd02Dr8+yF0O1uVtbEM7kim++m7+9X5fGuLS4kdOQEfc6qE3jt4dqk5sFBCC3Xt0hZje0JoJ4XfMyonhSPd5Q4UHY7rRwgUUO4CI84gx1ReiuZt63UGFQ7Y8gbxnB+JtDRHUL5TS+NUTcayDjx5k4sy1wW6OzVDFRYK5KlRfJW8cl9hjZ465uz9mJrACHq8nTASXY/utknCgI/GjRBITRMmCKUUIShWS0oSidKHRNmGiDGGm7SJqbh4sHFdFK78+yKYB+nrxbJvIZ4lyyN/xC6I88u84OXGM6DBbWSxfqG4JK5EJJ3ZA4YIiCwo3FB4osqHwQpEDRS40VAiN6UtF7kpy0cquKka4MR+FMVzig8cb6/x0E8WQdgpulbUb9j6//DAz+IBK8ruqbh87isBrUdztKq1u8qfFVrvUScsPDJVBX+k/pxzH8nUcSd45FBqph3eF4zkAIPyd3ehladXi41IBjdpZEQCh8QslKjFcGBP+HUGI+9B3rUJncbyjQTvgcth/njdObGdN+UmIBTJf/Cmtnv0wUQ3gIMkc6Uhnvn23ShALP3o6F5o0zv7XRGr8GtpWoZnzvLOYuM3CuMvPpJ7W8Ezm01vF3YROzS6+gG3r2BFhG9SbX/6H1BUk62QotskUlGxBMOsb31I5nWbK3CHbtt0Ihs4t7Icha6NVlWk5m86VHTXKGwrbQeZ/iZXOgnreWBeTWFsStR4ZRxIqB2y8YYiq86ODvNuiRHPbkfWGSfn+viUYyINGiwHemidUQBw0l9b4+atMfiiXmfKeZ2Za5K/eoE8Rg3bIirMcDC8IdKMB0+DLP7wliflOuFeyxjJ0X1r5KBGA5L4X7qw7iLDcfEccAtUhtn0Y1MTs3CrRNnH273ChccCXo0Y/HElqZ/83N6zmDlBx2tU0arAbUtxN6PqIe3ClR/Y/sUtlZZl6NztwtBshJk15LNpS81xUf+QbbpH0XR6t3oDdcARa7cQXv2/B69x7Ro2u6E5OW307OuhWSiUGO0DVQZ03g2NjGrSdXdVnvi7EdSmdF1c3XP4IaOroEUS9sQT0CaL+FKAZA4JoMJaAIUHu4fw3AIQaRjSi0TgCxjSix1IBwuMa0RNxBDypkTkuGY1iQhU0GUvAlCCaTgFaMCOIZmMJmBNkzWuHsFgwSlqMI2BJI2s5VzlWNKLVOALWNGpbz99CbRitnbTSTWPKXQiYu11vFAjW7MnfIiDtjSBtXwTR/krUYeOArMNBWWcfuoMgHQbBkEcQkEcRpGOVqEfFcVmPE7IeJ2U9Tsl6nJb1OCPrcTaqAedkA87LBlyQDbgoG3BJNmBDNoQu5z+yfNF9+U0t7ZFk0TjiykzLHB0N5m2aZzdFVs/Bj+yrFIBAkQiiQWLNuE8MAB2gLICaQVgKeI55R9CTcYoeY893lxZm2a46hk7p+gYG7tArJ43ft1guJz6ReFLXv86vRkP3NhIGLt8jdWq7/mvgk19t/b9hyX7+9TRx6jVuH/+mTgFO8t1jqbQy6waGaaMuk8PkqyVYw772dRKnviGzEAwBOvUS8At+74savyx5BqVYyl3A+s1todxVL07dSxjY+284hu4JUQaeYfBu0vBVx9g9+Z45+mto9N+5kzjqA/v7uvpeJ1s/e5NuHVLaiqYsQ7r1mi3/xtOplqctqdefFlGWm0d+LkNSuX4ipHD+xJM7p55RpP0nE3uWR0tG25tNfPLwqto0HlnTM95ISlPqXu5TZXPqy0odV2rNzgeqzhx1Qik65/2ABfOZUlHXHeRhba5xjfmB/iumXUtjobFdi+Pju5fH3KBe2cnHEuKPJYeP6PgErxFHKpbw3nXeH9u9NH5w5QPLZTyD7zKvSl9c46FK5ma6b5yUr4nrdUVv7r7hcnW+jyYnJ2QWMlqbJ/xG9WiFb6rB7x1pi4mjwR1Ct9xaKsCfT6Wn/cPc/9hODwCA4YIESGIBzLWdSjBRHXUBaalIhqO0LEHTU/KMbEEC29KZBXdACIwDqO0EM41j3x3cO9zlUk/NMxryXIxPXybYiCkh/vkrpJEUqgMEFsTzANQ4lKrthBByHFLWyS6PJ9GTmKnp6XlGeVY6Q+KsITEMTiMvqRNxdmOy0tO+sl0n4mySyklCio72TWvPiOEGsWLaDQUplJwHMyYBBA+5rjZpIk0LaV1phge8GepkfddRIxpACYo9iW6P223Wut6Z60qzYxiBOgQ5R+9G087r3r7N4yyUXF8fQ4pTD2CpMgjSbGKC7HB/YB7KYY0/gyjtir7CXC9cyKxwJ5jGO4EA0MLurx3M3vHo2r9NmMQvAeCbpv/ev9Hvz/vy/17izzIfgAkMACDgf7sSEfFE86t5SXInM70E0H9hpR/CRe8tvPxjv4U0LkQG/QguEAAzdkLhOkxg7EA7rgK4Y0+EhARgwhgESEYBuAVQhhHKcGsYw44vDBNowVdXl8BhCqmUbmn/S75pCOvYiUPYjUXMYwF74UQJfChGJZwYkDHrBDHp45WE+wCc6MFuzku6Nc3lBLCP8YISvht74IQXLW/wTsmpRtF31jwWYe59mEIhpv28qqUsYScX9cVkrC1HotLSWcNM0Sn28Ex1GnEwzbs7BzuvKNynO/PYBwrhzxSjEGXwwY8aDKAPQYyiBn1ZzaQKMKTsshZ5VnOWKxvRL0BmGHkLJbh++7v4Ul/eIro2ukm/Ce6ycwum4NtoLEemQu69BxjWNlltLtQ8Mtmk9I1rdHFQK5O5vF1ld7YGP477lP1Tlk9FfUozoGBpFFsJ46Tyu74HAYS3suhi78imcXGESjPCO/tdM+owhEfTtrLbdu+bT4Kku2J6YFuRxzasHVyr+aSXU5Wy575LkXOb8uoWm8LfUDMawmEAAAA=') format('woff2');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+        .wordmark {
+            font-family: 'Freemaged Wordmark', Impact, 'Arial Narrow', sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: .01em;
+            text-transform: uppercase;
+        }
+
         /* Same design system as the editor — hand-written, zero dependencies. */
         :root {
             color-scheme: dark;
-            --bg-app: #0c0e12;
-            --bg-panel: #12151b;
-            --surface-2: #1c212a;
-            --surface-3: #242a35;
-            --border: rgba(255, 255, 255, .07);
-            --border-strong: rgba(255, 255, 255, .13);
-            --text: #e9ecf2;
-            --text-muted: #98a1b1;
-            --text-dim: #6d7686;
-            --accent: #3b82f6;
-            --accent-hover: #2f76ec;
-            --accent-text: #82b1ff;
-            --accent-fg: #ffffff;
-            --accent-soft: rgba(59, 130, 246, .16);
-            --accent-border: rgba(59, 130, 246, .42);
-            --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
-            --shadow-lg: 0 14px 38px rgba(0, 0, 0, .55);
-            --focus: rgba(59, 130, 246, .7);
-            --r-sm: 8px;
-            --r: 10px;
-            --r-lg: 14px;
+            --bg-app: #000000;
+            --bg-panel: #000000;
+            --surface-2: #111111;
+            --surface-3: #202020;
+            --border: #303030;
+            --border-strong: #606060;
+            --text: #ededed;
+            --text-muted: #b0b0b0;
+            --text-dim: #858585;
+            --accent: #ededed;
+            --accent-hover: #ffffff;
+            --accent-text: #ededed;
+            --accent-fg: #000000;
+            --accent-soft: #181818;
+            --accent-border: #777777;
+            --shadow-md: none;
+            --shadow-lg: none;
+            --focus: #ffffff;
+            --r-sm: 0px;
+            --r: 0px;
+            --r-lg: 0px;
             --t: 150ms cubic-bezier(.4, 0, .2, 1);
         }
 
         [data-theme="light"] {
             color-scheme: light;
-            --bg-app: #f3f4f7;
+            --bg-app: #f5f5f5;
             --bg-panel: #ffffff;
-            --surface-2: #f4f5f8;
-            --surface-3: #e9ebf0;
-            --border: rgba(15, 23, 42, .10);
-            --border-strong: rgba(15, 23, 42, .17);
-            --text: #111827;
-            --text-muted: #5a6473;
-            --text-dim: #8791a1;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-text: #1d4ed8;
-            --accent-soft: rgba(37, 99, 235, .10);
-            --accent-border: rgba(37, 99, 235, .40);
-            --shadow-md: 0 4px 14px rgba(15, 23, 42, .10);
-            --shadow-lg: 0 14px 38px rgba(15, 23, 42, .16);
-            --focus: rgba(37, 99, 235, .55);
+            --surface-2: #f5f5f5;
+            --surface-3: #e8e8e8;
+            --border: #d4d4d4;
+            --border-strong: #8a8a8a;
+            --text: #171717;
+            --text-muted: #525252;
+            --text-dim: #6b6b6b;
+            --accent: #171717;
+            --accent-hover: #333333;
+            --accent-text: #171717;
+            --accent-soft: #eeeeee;
+            --accent-border: #737373;
+            --shadow-md: none;
+            --shadow-lg: none;
+            --focus: #171717;
+            --accent-fg: #ffffff;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -114,18 +226,18 @@
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+            stroke-linecap: square;
+            stroke-linejoin: miter;
         }
 
-        :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+        :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r); }
 
         .shell {
             max-width: 760px;
             margin: 0 auto;
             background-color: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: var(--r-lg);
+            border: none;
+            border-radius: var(--r);
             box-shadow: var(--shadow-md);
             padding: 32px;
         }
@@ -148,15 +260,17 @@
             letter-spacing: -.015em;
             color: var(--accent-text);
             text-decoration: none;
+            border-bottom: none;
         }
         .version {
             font-size: 10px;
             font-weight: 600;
             color: var(--text-dim);
-            background-color: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 1px 6px;
+            background-color: transparent;
+            border: none;
+            border-radius: var(--r);
+            padding: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         }
 
         .icon-btn {
@@ -165,7 +279,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             border: 1px solid var(--border);
             background-color: var(--surface-2);
             color: var(--text-muted);
@@ -213,7 +327,7 @@
             top: .62em;
             width: 6px;
             height: 6px;
-            border-radius: 50%;
+            border-radius: var(--r);
             background-color: var(--accent);
         }
         li strong { color: var(--text); font-weight: 600; }
@@ -242,7 +356,7 @@
             font-size: 14px;
             font-weight: 600;
             padding: 11px 20px;
-            border-radius: 9px;
+            border-radius: var(--r);
             border: 1px solid transparent;
             background-color: var(--accent);
             color: var(--accent-fg);
@@ -260,15 +374,15 @@
 <body>
 
     <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
-        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M13 3H7L3 7v10l4 4h10l4-4v-5h-7l-3-3V3Z"/></symbol>
         <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
     </svg>
 
     <div class="shell">
 
         <div class="topbar">
-            <a class="brand" href="../">Freemaged <span class="version">v2.2.2</span></a>
+            <a class="brand" href="../"><span class="wordmark">Freemaged</span> <span class="version">v2.3</span></a>
             <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                 <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
             </button>
@@ -319,7 +433,7 @@
                 toggle.title = label;
                 toggle.setAttribute('aria-label', label);
                 var meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#0c0e12' : '#f3f4f7');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#f5f5f5');
             }
 
             applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');

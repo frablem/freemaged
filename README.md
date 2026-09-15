@@ -40,6 +40,8 @@ If you prefer to run the editor offline, you can download the project and open i
 
 - **v2.2.2:** Made target file size the main export control across formats. Manual JPG/WEBP quality is under Advanced and only available without a target; export guidance explains automatic compression and dimension changes.
 
+- **v2.3:** Square controls and matching angular icons, a true-black OLED dark theme, neutral light colors, compact tool navigation, a locally embedded Barlow Condensed wordmark, and simpler visual hierarchy across the editor and About page.
+
 ## Made by
 
 This app was made by Francisco Fernandez with the help of AI.\

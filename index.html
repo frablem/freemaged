@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.2.2</title>
+    <title>Freemaged - Free Image Editor v2.3</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.fran.md/">
@@ -18,7 +18,7 @@
     <meta name="twitter:description" content="Edit images privately in your browser with Freemaged.">
     <meta name="twitter:image" content="https://freemaged.fran.md/fav.ico">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0c0e12">
+    <meta name="theme-color" content="#000000">
     <link rel="icon" href="fav.ico" type="image/x-icon">
 
     <script>
@@ -39,99 +39,211 @@
     </script>
 
     <style>
+        /* Wordmark font: Barlow Condensed ExtraBold, subset to FREEMAGED. Embedded for offline use.
+Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+        */
+        @font-face {
+            font-family: 'Freemaged Wordmark';
+            src: url('data:font/woff2;base64,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') format('woff2');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+        .wordmark {
+            font-family: 'Freemaged Wordmark', Impact, 'Arial Narrow', sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: .01em;
+            text-transform: uppercase;
+        }
+
         /* ============================================================
-           Freemaged v2.2.2 — hand-written design system, zero dependencies
+           Freemaged v2.3 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
             color-scheme: dark;
 
-            --bg-app: #0c0e12;
-            --bg-panel: #12151b;
-            --stage: #15181f;
-            --surface-1: #171b22;
-            --surface-2: #1c212a;
-            --surface-3: #242a35;
-            --surface-input: #161a21;
+            --bg-app: #000000;
+            --bg-panel: #000000;
+            --stage: #000000;
+            --surface-1: #0a0a0a;
+            --surface-2: #111111;
+            --surface-3: #202020;
+            --surface-input: #080808;
 
-            --border: rgba(255, 255, 255, .07);
-            --border-strong: rgba(255, 255, 255, .13);
+            --border: #303030;
+            --border-strong: #606060;
 
-            --text: #e9ecf2;
-            --text-muted: #98a1b1;
-            --text-dim: #6d7686;
+            --text: #ededed;
+            --text-muted: #b0b0b0;
+            --text-dim: #858585;
 
-            --accent: #3b82f6;
-            --accent-hover: #2f76ec;
-            --accent-text: #82b1ff;
-            --accent-fg: #ffffff;
-            --accent-soft: rgba(59, 130, 246, .16);
-            --accent-border: rgba(59, 130, 246, .42);
-            --accent-drop: rgba(59, 130, 246, .10);
+            --accent: #ededed;
+            --accent-hover: #ffffff;
+            --accent-text: #ededed;
+            --accent-fg: #000000;
+            --accent-soft: #181818;
+            --accent-border: #777777;
+            --accent-drop: rgba(255, 255, 255, .06);
 
             --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
-            --info: #3b82f6;
+            --info: #a3a3a3;
 
             --danger-soft: rgba(239, 68, 68, .10);
             --danger-border: rgba(239, 68, 68, .28);
             --danger-text: #f87171;
 
             --track: rgba(255, 255, 255, .13);
-            --thumb-ring: #12151b;
-            --toast-bg: #1b2029;
+            --thumb-ring: #000000;
+            --toast-bg: #111111;
 
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
-            --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
-            --shadow-lg: 0 14px 38px rgba(0, 0, 0, .55);
+            --shadow-sm: none;
+            --shadow-md: none;
+            --shadow-lg: none;
 
-            --focus: rgba(59, 130, 246, .7);
+            --focus: #ffffff;
 
-            --r-sm: 8px;
-            --r: 10px;
-            --r-lg: 14px;
+            --r-sm: 0px;
+            --r: 0px;
+            --r-lg: 0px;
             --t: 150ms cubic-bezier(.4, 0, .2, 1);
         }
 
         [data-theme="light"] {
             color-scheme: light;
 
-            --bg-app: #f3f4f7;
+            --bg-app: #f5f5f5;
             --bg-panel: #ffffff;
-            --stage: #e9ebf0;
-            --surface-1: #ffffff;
-            --surface-2: #f4f5f8;
-            --surface-3: #e9ebf0;
+            --stage: #eeeeee;
+            --surface-1: #fafafa;
+            --surface-2: #f5f5f5;
+            --surface-3: #e8e8e8;
             --surface-input: #ffffff;
 
-            --border: rgba(15, 23, 42, .10);
-            --border-strong: rgba(15, 23, 42, .17);
+            --border: #d4d4d4;
+            --border-strong: #8a8a8a;
 
-            --text: #111827;
-            --text-muted: #5a6473;
-            --text-dim: #8791a1;
+            --text: #171717;
+            --text-muted: #525252;
+            --text-dim: #6b6b6b;
 
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-text: #1d4ed8;
-            --accent-soft: rgba(37, 99, 235, .10);
-            --accent-border: rgba(37, 99, 235, .40);
-            --accent-drop: rgba(37, 99, 235, .08);
+            --accent: #171717;
+            --accent-hover: #333333;
+            --accent-text: #171717;
+            --accent-soft: #eeeeee;
+            --accent-border: #737373;
+            --accent-drop: rgba(0, 0, 0, .05);
 
             --danger-soft: rgba(239, 68, 68, .08);
             --danger-border: rgba(239, 68, 68, .25);
             --danger-text: #dc2626;
 
-            --track: rgba(15, 23, 42, .14);
+            --track: #cccccc;
             --thumb-ring: #ffffff;
             --toast-bg: #ffffff;
 
-            --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
-            --shadow-md: 0 4px 14px rgba(15, 23, 42, .10);
-            --shadow-lg: 0 14px 38px rgba(15, 23, 42, .16);
+            --shadow-sm: none;
+            --shadow-md: none;
+            --shadow-lg: none;
 
-            --focus: rgba(37, 99, 235, .55);
+            --focus: #171717;
+            --accent-fg: #ffffff;
         }
 
         /* ---------------- base ---------------- */
@@ -175,8 +287,8 @@
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+            stroke-linecap: square;
+            stroke-linejoin: miter;
         }
         .icon-xs { width: 12px; height: 12px; }
         .icon-sm { width: 14px; height: 14px; }
@@ -186,7 +298,7 @@
         :focus-visible {
             outline: 2px solid var(--focus);
             outline-offset: 2px;
-            border-radius: 4px;
+            border-radius: var(--r);
         }
 
         .thin-scroll { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
@@ -194,7 +306,7 @@
         .thin-scroll::-webkit-scrollbar-track { background: transparent; }
         .thin-scroll::-webkit-scrollbar-thumb {
             background: var(--border-strong);
-            border-radius: 999px;
+            border-radius: var(--r);
             border: 3px solid transparent;
             background-clip: content-box;
         }
@@ -309,10 +421,11 @@
             font-weight: 600;
             letter-spacing: .02em;
             color: var(--text-dim);
-            background-color: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 1px 6px;
+            background-color: transparent;
+            border: none;
+            border-radius: var(--r);
+            padding: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         }
 
         .header-actions { display: flex; align-items: center; gap: 2px; }
@@ -323,7 +436,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             border: 1px solid transparent;
             background-color: transparent;
             color: var(--text-muted);
@@ -380,7 +493,7 @@
             color: var(--text);
             background-color: var(--surface-input);
             border: 1px solid var(--border-strong);
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             padding: 8px 10px;
             appearance: none;
             -webkit-appearance: none;
@@ -436,7 +549,7 @@
             height: 4px;
             padding: 0;
             border: none;
-            border-radius: 999px;
+            border-radius: var(--r);
             background-color: var(--track);
             cursor: pointer;
             transition: opacity var(--t);
@@ -447,7 +560,7 @@
             appearance: none;
             width: 16px;
             height: 16px;
-            border-radius: 50%;
+            border-radius: var(--r);
             background-color: var(--accent);
             border: 2px solid var(--thumb-ring);
             box-shadow: var(--shadow-sm);
@@ -457,7 +570,7 @@
         input[type="range"]::-moz-range-thumb {
             width: 12px;
             height: 12px;
-            border-radius: 50%;
+            border-radius: var(--r);
             background-color: var(--accent);
             border: 2px solid var(--thumb-ring);
             box-shadow: var(--shadow-sm);
@@ -481,7 +594,7 @@
             height: 16px;
             margin: 0;
             flex: none;
-            border-radius: 5px;
+            border-radius: var(--r);
             border: 1px solid var(--border-strong);
             background-color: var(--surface-input);
             cursor: pointer;
@@ -499,7 +612,7 @@
             top: 1.5px;
             width: 4px;
             height: 8px;
-            border: solid #fff;
+            border: solid var(--accent-fg);
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
@@ -509,7 +622,7 @@
         .scope-row {
             padding: 9px 10px;
             border: 1px solid var(--border);
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             background-color: var(--surface-1);
         }
 
@@ -539,15 +652,15 @@
             height: 36px;
             padding: 3px;
             border: 1px solid var(--border-strong);
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             background-color: var(--surface-input);
             cursor: pointer;
             transition: border-color var(--t);
         }
         input[type="color"]:hover:not(:disabled) { border-color: var(--text-dim); }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
-        input[type="color"]::-moz-color-swatch { border: none; border-radius: 5px; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: var(--r); }
+        input[type="color"]::-moz-color-swatch { border: none; border-radius: var(--r); }
 
         /* ---------------- buttons ---------------- */
         .btn {
@@ -560,7 +673,7 @@
             font-size: 13px;
             font-weight: 500;
             padding: 9px 14px;
-            border-radius: 9px;
+            border-radius: var(--r);
             border: 1px solid var(--border);
             background-color: var(--surface-2);
             color: var(--text);
@@ -590,9 +703,9 @@
         .btn-soft:hover:not(:disabled) { background-color: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
 
         .btn-danger {
-            background-color: var(--danger-soft);
-            border-color: var(--danger-border);
-            color: var(--danger-text);
+            background-color: transparent;
+            border-color: var(--border);
+            color: var(--text-muted);
         }
         .btn-danger:hover:not(:disabled) { background-color: var(--danger-soft); border-color: var(--error); color: var(--danger-text); }
 
@@ -640,7 +753,7 @@
         .thumb {
             position: relative;
             aspect-ratio: 1 / 1;
-            border-radius: var(--r-sm);
+            border-radius: var(--r);
             overflow: hidden;
             border: 1px solid var(--border-strong);
             background-color: var(--surface-2);
@@ -672,8 +785,8 @@
             justify-content: center;
             padding: 0;
             border: none;
-            border-radius: 6px;
-            background-color: rgba(8, 10, 14, .72);
+            border-radius: var(--r);
+            background-color: rgba(0, 0, 0, .8);
             color: #fff;
             cursor: pointer;
             opacity: 0;
@@ -689,32 +802,35 @@
         .tab-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            gap: 1px;
+            padding: 1px;
+            background-color: var(--border);
             margin-bottom: 18px;
         }
 
         .tab-button {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            padding: 10px 2px 9px;
+            gap: 6px;
+            min-height: 44px;
+            padding: 8px 4px;
             font: inherit;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 500;
-            border-radius: 9px;
-            border: 1px solid var(--border);
-            background-color: var(--surface-2);
+            border-radius: var(--r);
+            border: none;
+            background-color: var(--bg-panel);
             color: var(--text-muted);
             cursor: pointer;
             transition: background-color var(--t), border-color var(--t), color var(--t);
         }
-        .tab-button .icon { width: 18px; height: 18px; }
+        .tab-button .icon { width: 15px; height: 15px; }
         .tab-button:hover { background-color: var(--surface-3); color: var(--text); }
         .tab-button.active {
-            background-color: var(--accent-soft);
-            border-color: var(--accent-border);
+            background-color: var(--surface-3);
+            box-shadow: inset 0 -2px 0 var(--accent);
             color: var(--accent-text);
         }
 
@@ -757,9 +873,9 @@
             justify-content: center;
             gap: 6px;
             padding: 0 10px;
-            border-radius: 7px;
+            border-radius: var(--r);
             border-left: 1px solid var(--border);
-            border-radius: 0;
+            border-radius: var(--r);
             background-color: var(--accent-soft);
             color: var(--accent-text);
             font-size: 11px;
@@ -905,7 +1021,7 @@
             height: 12px;
             background-color: var(--accent);
             border: 2px solid #fff;
-            border-radius: 50%;
+            border-radius: var(--r);
             box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
             z-index: 30;
         }
@@ -945,14 +1061,14 @@
 
         .empty-state { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .empty-icon {
-            width: 52px;
-            height: 52px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--r-lg);
-            border: 1px solid var(--border);
-            background-color: var(--surface-2);
+            border-radius: var(--r);
+            border: none;
+            background-color: transparent;
             color: var(--text-dim);
             margin-bottom: 12px;
         }
@@ -964,7 +1080,7 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
             font-size: 11px;
             padding: 1px 5px;
-            border-radius: 5px;
+            border-radius: var(--r);
             border: 1px solid var(--border-strong);
             background-color: var(--surface-2);
             color: var(--text-muted);
@@ -980,7 +1096,7 @@
             align-items: center;
             justify-content: center;
             border: 2px dashed var(--accent);
-            border-radius: var(--r-lg);
+            border-radius: var(--r);
             background-color: var(--accent-drop);
             pointer-events: none;
         }
@@ -1008,7 +1124,9 @@
             right: 24px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 1px;
+            padding: 1px;
+            background-color: var(--border-strong);
             z-index: 30;
         }
         .fab {
@@ -1017,8 +1135,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--r-sm);
-            border: 1px solid var(--border-strong);
+            border-radius: var(--r);
+            border: none;
             background-color: var(--bg-panel);
             color: var(--text-muted);
             cursor: pointer;
@@ -1049,7 +1167,7 @@
             color: var(--text);
             background-color: var(--bg-panel);
             border: 1px solid var(--border-strong);
-            border-radius: var(--r-lg);
+            border-radius: var(--r);
             box-shadow: var(--shadow-lg);
         }
         .confirm-dialog::backdrop {
@@ -1160,36 +1278,36 @@
     <!-- Inline icon sprite: 24px grid, stroke-width 2, currentColor, no external requests. -->
     <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
         <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
-        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
-        <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
-        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 15H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></symbol>
-        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
-        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
-        <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
-        <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
-        <symbol id="i-resize" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M16 3h5v5"/><path d="M14 10 21 3"/></symbol>
-        <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="m9 4-5 5 5 5M4 9h16v11h-9"/></symbol>
+        <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 4 5 5-5 5M20 9H4v11h9"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V3h8v3M5 6v15h14V6M10 10v7M14 10v7"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M13 3H7L3 7v10l4 4h10l4-4v-5h-7l-3-3V3Z"/></symbol>
+        <symbol id="i-upload" viewBox="0 0 24 24"><path d="M3 15v6h18v-6M7 8l5-5 5 5M12 3v12"/></symbol>
+        <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><rect x="7" y="7" width="3" height="3"/><path d="m3 17 5-5 4 4 4-5 5 6"/></symbol>
+        <symbol id="i-resize" viewBox="0 0 24 24"><path d="M12 3H3v18h18v-9M15 3h6v6M12 12l9-9"/></symbol>
+        <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v16h16M18 22V6H2"/></symbol>
         <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7"/><path d="M10 4H3"/><path d="M21 12h-9"/><path d="M8 12H3"/><path d="M21 20h-5"/><path d="M12 20H3"/><path d="M14 2v4"/><path d="M8 10v4"/><path d="M16 18v4"/></symbol>
-        <symbol id="i-pen" viewBox="0 0 24 24"><path d="M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2a2 2 0 0 0-.5.8l-1.3 4.4a.5.5 0 0 0 .6.6l4.4-1.3a2 2 0 0 0 .8-.5Z"/><path d="m15 5 4 4"/></symbol>
+        <symbol id="i-pen" viewBox="0 0 24 24"><path d="m3 16 13-13 5 5L8 21H3v-5ZM13 6l5 5M3 16l5 5"/></symbol>
         <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
-        <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
-        <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
-        <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
-        <symbol id="i-rotate-cw" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
-        <symbol id="i-flip-h" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><path d="M12 2v2"/><path d="M12 8v2"/><path d="M12 14v2"/><path d="M12 20v2"/></symbol>
-        <symbol id="i-flip-v" viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><path d="M2 12h2"/><path d="M8 12h2"/><path d="M14 12h2"/><path d="M20 12h2"/></symbol>
+        <symbol id="i-download" viewBox="0 0 24 24"><path d="M3 15v6h18v-6M7 10l5 5 5-5M12 15V3"/></symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></symbol>
+        <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="m8 3-5 5 5 5M3 8h17v12H4v-4"/></symbol>
+        <symbol id="i-rotate-cw" viewBox="0 0 24 24"><path d="m16 3 5 5-5 5M21 8H4v12h16v-4"/></symbol>
+        <symbol id="i-flip-h" viewBox="0 0 24 24"><path d="M8 3H3v18h5M16 3h5v18h-5M12 2v3M12 10v4M12 19v3"/></symbol>
+        <symbol id="i-flip-v" viewBox="0 0 24 24"><path d="M3 8V3h18v5M3 16v5h18v-5M2 12h3M10 12h4M19 12h3"/></symbol>
         <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></symbol>
         <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
-        <symbol id="i-rect" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/></symbol>
+        <symbol id="i-rect" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12"/></symbol>
         <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="6"/></symbol>
         <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
-        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
-        <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><rect x="8" y="8" width="8" height="8" rx="1"/></symbol>
-        <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4"/><path d="m8.6 13.5 6.8 4"/></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="m2 12 6-6h8l6 6-6 6H8Z"/><rect x="10" y="10" width="4" height="4"/></symbol>
+        <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/><rect x="8" y="8" width="8" height="8"/></symbol>
+        <symbol id="i-share" viewBox="0 0 24 24"><rect x="15" y="3" width="6" height="6"/><rect x="3" y="9" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/><path d="m9 10 6-3M9 14l6 3"/></symbol>
         <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
         <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
-        <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
-        <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></symbol>
+        <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></symbol>
+        <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M8 3v5H3M16 3v5h5M3 16h5v5M21 16h-5v5"/></symbol>
         <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
     </svg>
 
@@ -1202,7 +1320,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2.2</span></h1>
+            <h1 class="logo"><span class="mark wordmark">Freemaged</span> <span class="version">v2.3</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1880,7 +1998,7 @@
             themeToggle.title = label;
             themeToggle.setAttribute('aria-label', label);
             const meta = queryEl('meta[name="theme-color"]');
-            if (meta) meta.setAttribute('content', theme === 'dark' ? '#0c0e12' : '#f3f4f7');
+            if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#f5f5f5');
         }
 
         function readPreference(key) {
