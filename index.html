@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freemaged - Free Image Editor v2.2</title>
+    <title>Freemaged - Free Image Editor v2.2.1</title>
     <meta name="description" content="Freemaged is a free, privacy-focused browser image editor that runs entirely in your browser.">
     <meta name="keywords" content="image editor, online image editor, privacy, open source, freemaged">
     <link rel="canonical" href="https://freemaged.com/">
@@ -40,7 +40,7 @@
 
     <style>
         /* ============================================================
-           Freemaged v2.2 — hand-written design system, zero dependencies
+           Freemaged v2.2.1 — hand-written design system, zero dependencies
            ============================================================ */
 
         :root {
@@ -1202,7 +1202,7 @@
     <div id="controlPanel" class="control-panel thin-scroll">
 
         <div class="panel-header">
-            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2</span></h1>
+            <h1 class="logo"><span class="mark">Freemaged</span> <span class="version">v2.2.1</span></h1>
             <div class="header-actions">
                 <button id="themeToggle" class="icon-btn" title="Switch to light theme" aria-label="Switch to light theme">
                     <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
@@ -1547,7 +1547,8 @@
             </div>
             <div>
                 <label for="targetFileSize" class="field-label">Target file size (KB, optional for JPG/WEBP)</label>
-                <input type="number" id="targetFileSize" placeholder="e.g., 500">
+                <input type="number" id="targetFileSize" placeholder="e.g., 500" aria-describedby="targetFileSizeHint">
+                <p id="targetFileSizeHint" class="hint" hidden>PNG keeps full quality, so target KB is unavailable. You can still resize and download as PNG. Choose WEBP or JPG to target a file size.</p>
             </div>
             <div class="check-row">
                 <input id="exportAllowResize" type="checkbox">
@@ -1767,6 +1768,7 @@
         const favoritePreset = getEl('favoritePreset');
         const optimizeAllowResize = getEl('optimizeAllowResize');
         const exportAllowResize = getEl('exportAllowResize');
+        const targetFileSizeHint = getEl('targetFileSizeHint');
         const optimizeResult = getEl('optimizeResult');
         const previewExport = getEl('previewExport');
         const outputPreview = getEl('outputPreview');
@@ -2114,7 +2116,7 @@
                 flipHorizontalBtn, flipVerticalBtn, rotateAngleSlider, applyRotateAngleBtn, adjustAll,
                 applyAdjustmentsBtn, resetAdjustmentsBtn,
                 resizePercent, resizeWidthInput, resizeHeightInput, aspectLock, resizeAll, fileNameInput,
-                fileFormatSelect, qualitySlider, targetFileSizeInput, aspectRatioSelect,
+                fileFormatSelect, qualitySlider, targetFileSizeInput, exportAllowResize, aspectRatioSelect,
                 brightnessSlider, contrastSlider, saturationSlider, grayscaleSlider,
                 penToolBtn, lineToolBtn, arrowToolBtn, rectToolBtn, ellipseToolBtn, textToolBtn, drawColorInput, lineWidthSlider,
                 drawTextInput, textSizeSlider, textOpacitySlider, textBold, textOutline, textPlacement, placeTextBtn,
@@ -2156,6 +2158,7 @@
                 optimizeAll.checked = false;
             }
             runCustomPresetBtn.disabled = savedPresetSelect.options.length === 0;
+            updateQualityVisibility();
             updateUndoRedoButtons();
         }
         
@@ -3808,8 +3811,11 @@
 
         // --- EXPORT LOGIC ---
         function updateQualityVisibility() {
-            qualityContainer.style.display = (fileFormatSelect.value === 'image/png') ? 'none' : 'block';
-            targetFileSizeInput.disabled = (fileFormatSelect.value === 'image/png');
+            const isPng = fileFormatSelect.value === 'image/png';
+            qualityContainer.style.display = isPng ? 'none' : 'block';
+            targetFileSizeHint.hidden = !isPng;
+            targetFileSizeInput.disabled = isPng || activeImageIndex === -1;
+            exportAllowResize.disabled = isPng || activeImageIndex === -1;
         }
         fileFormatSelect.addEventListener('change', updateQualityVisibility);
         qualitySlider.addEventListener('input', () => {

@@ -40,3 +40,5 @@ If you prefer to run the editor offline, you can download the project and open i
 
 This app was made by Francisco Fernandez with the help of AI.\
 [fran.md](https://fran.md)
+
+- **v2.2.1:** Explained why PNG exports cannot target a file size in KB, kept those controls consistent after resizing and exporting, and preserved PNG dimension resizing and downloads.
